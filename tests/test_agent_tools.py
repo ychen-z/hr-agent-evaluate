@@ -2,6 +2,7 @@ from unittest.mock import patch, MagicMock
 from app.agent.tools.parse_jd import parse_jd_tool
 import json
 import pytest
+import app.agent.tools.parse_jd as _parse_jd_mod
 
 
 def test_parse_jd_tool_returns_json_string():
@@ -12,19 +13,25 @@ def test_parse_jd_tool_returns_json_string():
         "education_level": "本科",
         "soft_skills": ["沟通能力"]
     }
-    with patch("app.agent.tools.parse_jd.JDParser") as MockParser:
-        MockParser.return_value.parse.return_value = mock_req
+    mock_parser = MagicMock()
+    mock_parser.parse.return_value = mock_req
+    _parse_jd_mod._parser = None  # reset lazy singleton before test
+    with patch("app.agent.tools.parse_jd.JDParser", return_value=mock_parser):
         result = parse_jd_tool.invoke({"jd_text": "需要Python工程师，3年经验，本科"})
+    _parse_jd_mod._parser = None  # clean up after test
     data = json.loads(result)
     assert data["required_skills"] == ["Python"]
     assert data["experience_years"] == 3
 
 
 def test_parse_jd_tool_propagates_exception():
-    with patch("app.agent.tools.parse_jd.JDParser") as MockParser:
-        MockParser.return_value.parse.side_effect = ValueError("Failed to parse JD: bad json")
+    mock_parser = MagicMock()
+    mock_parser.parse.side_effect = ValueError("Failed to parse JD: bad json")
+    _parse_jd_mod._parser = None  # reset lazy singleton before test
+    with patch("app.agent.tools.parse_jd.JDParser", return_value=mock_parser):
         with pytest.raises(Exception):
             parse_jd_tool.invoke({"jd_text": "some jd"})
+    _parse_jd_mod._parser = None  # clean up after test
 
 
 from app.agent.tools.score_candidate import run_score_candidate

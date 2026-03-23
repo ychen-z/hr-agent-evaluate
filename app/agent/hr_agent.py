@@ -15,6 +15,9 @@ from app.utils.llm import get_qwen_model
 # Module-level stores keyed by session_id (string).
 # Safe under CPython GIL with single-worker uvicorn.
 # NOT safe with uvicorn --workers N (multiprocess).
+# Known limitation: entries are never evicted; long-running processes accumulate
+# one entry per request. For production use with high request volume, replace with
+# a bounded cache (e.g. cachetools.LRUCache) or an external store (Redis).
 _html_store: dict[str, str] = {}
 _report_store: dict[str, dict] = {}
 
