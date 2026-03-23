@@ -1,6 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
+from unittest.mock import patch, MagicMock
 from app.main import app
+from app.types.models import JDRequirements
 
 client = TestClient(app)
 
@@ -20,14 +22,23 @@ def test_match_endpoint():
         },
         "job_description": "招聘Python工程师，3年以上经验，本科"
     }
-    
-    response = client.post("/api/v1/match", json=payload)
+
+    mock_requirements = JDRequirements(
+        required_skills=["Python", "Golang"],
+        experience_years=3,
+        education_level="本科",
+        soft_skills=["沟通能力"]
+    )
+
+    with patch("app.api.routes._get_parser") as mock_get_parser:
+        mock_get_parser.return_value.parse.return_value = mock_requirements
+        response = client.post("/api/v1/match", json=payload)
+
     assert response.status_code == 200
     data = response.json()
     assert "overall_score" in data
     assert "recommendation" in data
 
-from unittest.mock import patch
 from app.agent.hr_agent import _html_store
 from app.types.models import AgentResult, MatchReport
 

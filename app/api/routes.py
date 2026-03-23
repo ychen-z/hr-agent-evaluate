@@ -6,9 +6,17 @@ from app.pipeline.reporter import Reporter
 import os
 
 router = APIRouter()
-parser = JDParser()
+_parser = None
 matcher = Matcher()
 reporter = Reporter()
+
+
+def _get_parser() -> JDParser:
+    global _parser
+    if _parser is None:
+        _parser = JDParser()
+    return _parser
+
 
 @router.post("/api/v1/match", response_model=MatchReport)
 async def match_resume(
@@ -23,7 +31,7 @@ async def match_resume(
         raise HTTPException(status_code=400, detail="Job description too short")
     
     try:
-        requirements = parser.parse(request.job_description)
+        requirements = _get_parser().parse(request.job_description)
         
         if not requirements.required_skills and requirements.experience_years == 0:
             raise HTTPException(status_code=400, detail="Unable to parse JD requirements")
