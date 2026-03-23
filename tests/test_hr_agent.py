@@ -1,3 +1,4 @@
+import pytest
 import uuid
 from unittest.mock import MagicMock, patch
 from app.agent.hr_agent import HRAgent, AgentLoopError, _html_store
@@ -83,8 +84,5 @@ def test_agent_raises_on_loop_limit():
         )
 
         agent = HRAgent(max_iterations=3)
-        try:
+        with pytest.raises(AgentLoopError):
             agent.run(resume, JD_TEXT)
-            assert False, "Should have raised AgentLoopError"
-        except AgentLoopError:
-            pass
