@@ -43,3 +43,9 @@ class MatchReport(BaseModel):
 class MatchRequest(BaseModel):
     resume: Resume
     job_description: str
+
+class AgentResult(BaseModel):
+    session_id: str
+    report: MatchReport
+    html: str
+    reasoning: str
