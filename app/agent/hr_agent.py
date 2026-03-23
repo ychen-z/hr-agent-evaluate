@@ -4,9 +4,56 @@ import uuid
 
 from anthropic import Anthropic
 
-from app.agent.tools.parse_jd import run_parse_jd, TOOL_SCHEMA as PARSE_JD_SCHEMA
-from app.agent.tools.score_candidate import run_score_candidate, TOOL_SCHEMA as SCORE_SCHEMA
-from app.agent.tools.generate_report_html import run_generate_report_html, TOOL_SCHEMA as HTML_SCHEMA
+from app.agent.tools.parse_jd import parse_jd_tool
+from app.agent.tools.score_candidate import run_score_candidate as _run_score_candidate
+from app.agent.tools.generate_report_html import run_generate_report_html as _run_generate_report_html
+
+# Adapter wrappers: translate single-dict tool_input to new signatures
+def run_parse_jd(tool_input: dict) -> dict:
+    import json
+    result = parse_jd_tool.invoke({"jd_text": tool_input["jd_text"]})
+    return json.loads(result)
+
+def run_score_candidate(tool_input: dict) -> dict:
+    try:
+        return _run_score_candidate(tool_input["resume"], tool_input["requirements"])
+    except (KeyError, ValueError) as e:
+        return {"error": str(e)}
+
+def run_generate_report_html(tool_input: dict) -> str:
+    report = tool_input.get("report", tool_input)
+    return _run_generate_report_html(report)
+
+PARSE_JD_SCHEMA = {
+    "name": "parse_jd",
+    "description": "解析职位描述文本，提取结构化需求（技能、经验年限、学历、软技能）",
+    "input_schema": {
+        "type": "object",
+        "properties": {"jd_text": {"type": "string", "description": "原始职位描述文本"}},
+        "required": ["jd_text"]
+    }
+}
+SCORE_SCHEMA = {
+    "name": "score_candidate",
+    "description": "根据解析后的职位需求对候选人简历进行评分，返回各维度分数和综合推荐结论",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "resume": {"type": "object", "description": "候选人简历（Resume 结构体）"},
+            "requirements": {"type": "object", "description": "由 parse_jd 返回的职位需求结构体"}
+        },
+        "required": ["resume", "requirements"]
+    }
+}
+HTML_SCHEMA = {
+    "name": "generate_report_html",
+    "description": "根据评分报告生成专业的 HTML 评估报告页面，包含总分、维度评分条和推荐结论",
+    "input_schema": {
+        "type": "object",
+        "properties": {"report": {"type": "object", "description": "由 score_candidate 返回的 MatchReport 结构体"}},
+        "required": ["report"]
+    }
+}
 from app.types.models import AgentResult, MatchReport, Resume
 
 # Module-level store: session_id -> html string (persists for process lifetime)

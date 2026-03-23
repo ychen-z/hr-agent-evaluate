@@ -233,24 +233,7 @@ def _render_html(report: dict, tokens: dict) -> str:
 </html>"""
 
 
-def run_generate_report_html(tool_input: dict) -> str:
-    """Tool adapter: generate a professional HTML report from a MatchReport dict."""
-    report = tool_input.get("report", tool_input)
+def run_generate_report_html(report: dict) -> str:
+    """Generate a professional HTML report from a MatchReport dict. Returns raw HTML string."""
     tokens = _gather_design_tokens()
     return _render_html(report, tokens)
-
-
-TOOL_SCHEMA = {
-    "name": "generate_report_html",
-    "description": "\u6839\u636e\u8bc4\u5206\u62a5\u544a\u751f\u6210\u4e13\u4e1a\u7684 HTML \u8bc4\u4f30\u62a5\u544a\u9875\u9762\uff0c\u5305\u542b\u603b\u5206\u3001\u7ef4\u5ea6\u8bc4\u5206\u6761\u548c\u63a8\u8350\u7ed3\u8bba",
-    "input_schema": {
-        "type": "object",
-        "properties": {
-            "report": {
-                "type": "object",
-                "description": "\u7531 score_candidate \u8fd4\u56de\u7684 MatchReport \u7ed3\u6784\u4f53"
-            }
-        },
-        "required": ["report"]
-    }
-}
