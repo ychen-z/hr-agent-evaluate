@@ -50,3 +50,35 @@ def test_score_candidate_returns_report_dict():
 def test_score_candidate_returns_error_on_invalid_input():
     result = run_score_candidate({"resume": {}, "requirements": {}})
     assert "error" in result
+
+from unittest.mock import patch
+from app.agent.tools.generate_report_html import run_generate_report_html
+
+SAMPLE_REPORT = {
+    "overall_score": 87,
+    "dimensions": {
+        "hard_skills": {"score": 90, "matched": ["Python"], "missing": [], "detail": None},
+        "experience": {"score": 100, "matched": [], "missing": [], "detail": None},
+        "education": {"score": 100, "matched": [], "missing": [], "detail": None},
+        "soft_skills": {"score": 80, "matched": ["\u6c9f\u901a\u80fd\u529b"], "missing": [], "detail": None},
+    },
+    "recommendation": "\u63a8\u8350",
+    "reasons": ["\u6280\u672f\u6808\u5339\u914d\u5ea6\u9ad8", "\u5de5\u4f5c\u7ecf\u9a8c\u7b26\u5408\u8981\u6c42"]
+}
+
+def test_generate_report_html_returns_html_string():
+    # Mock subprocess so test does not depend on ui-ux-pro-max scripts
+    with patch("app.agent.tools.generate_report_html.subprocess.run") as mock_run:
+        mock_run.return_value = MagicMock(returncode=0, stdout="[]")
+        result = run_generate_report_html({"report": SAMPLE_REPORT})
+    assert isinstance(result, str)
+    assert "<html" in result.lower()
+    assert "87" in result  # overall score present
+
+def test_generate_report_html_falls_back_when_scripts_unavailable():
+    with patch("app.agent.tools.generate_report_html.subprocess.run") as mock_run:
+        mock_run.side_effect = FileNotFoundError("script not found")
+        result = run_generate_report_html({"report": SAMPLE_REPORT})
+    assert isinstance(result, str)
+    assert "<html" in result.lower()
+    assert "87" in result
