@@ -1,7 +1,8 @@
+import json
 import pytest
-import uuid
 from unittest.mock import MagicMock, patch
-from app.agent.hr_agent import HRAgent, AgentLoopError, _html_store
+from langchain_core.messages import AIMessage
+from app.types.models import Resume
 
 RESUME_DICT = {
     "name": "张三",
@@ -14,50 +15,33 @@ RESUME_DICT = {
 }
 JD_TEXT = "招募Python工程师，3年经验，本科学历"
 
-
-def _make_tool_use_response(tool_name, tool_input, tool_use_id="tu_001"):
-    block = MagicMock()
-    block.type = "tool_use"
-    block.name = tool_name
-    block.input = tool_input
-    block.id = tool_use_id
-    response = MagicMock()
-    response.stop_reason = "tool_use"
-    response.content = [block]
-    return response
+REPORT_DICT = {
+    "overall_score": 87,
+    "dimensions": {},
+    "recommendation": "推荐",
+    "reasons": ["技术栈匹配度高"]
+}
 
 
-def _make_end_turn_response(text="评估完成，推荐该候选人"):
-    block = MagicMock()
-    block.type = "text"
-    block.text = text
-    response = MagicMock()
-    response.stop_reason = "end_turn"
-    response.content = [block]
-    return response
-
-
-def test_agent_run_completes_full_loop():
-    """Agent calls all three tools and returns AgentResult."""
-    from app.types.models import Resume
-
+def test_agent_run_returns_agent_result():
+    """HRAgent.run returns AgentResult with populated fields."""
     resume = Resume(**RESUME_DICT)
 
-    requirements_dict = {"required_skills": ["Python"], "experience_years": 3, "education_level": "本科", "soft_skills": ["沟通能力"]}
-    report_dict = {"overall_score": 87, "dimensions": {}, "recommendation": "推荐", "reasons": ["技术栈匹配度高"]}
+    fake_graph = MagicMock()
 
-    with patch("app.agent.hr_agent.Anthropic") as MockAnthropic, \
-         patch("app.agent.hr_agent.run_parse_jd", return_value=requirements_dict), \
-         patch("app.agent.hr_agent.run_score_candidate", return_value=report_dict), \
-         patch("app.agent.hr_agent.run_generate_report_html", return_value="<html>report</html>"):
+    def fake_invoke(messages, config):
+        sid = config["configurable"]["thread_id"]
+        from app.agent import hr_agent as agent_mod
+        agent_mod._report_store[sid] = REPORT_DICT
+        agent_mod._html_store[sid] = "<html>report</html>"
+        return {"messages": [AIMessage(content="评估完成，推荐该候选人")]}
 
-        mock_client = MockAnthropic.return_value
-        mock_client.messages.create.side_effect = [
-            _make_tool_use_response("parse_jd", {"jd_text": JD_TEXT}),
-            _make_tool_use_response("score_candidate", {"resume": RESUME_DICT, "requirements": requirements_dict}, "tu_002"),
-            _make_tool_use_response("generate_report_html", {"report": report_dict}, "tu_003"),
-            _make_end_turn_response("推荐该候选人"),
-        ]
+    fake_graph.invoke.side_effect = fake_invoke
+
+    with patch("app.agent.hr_agent.create_react_agent", return_value=fake_graph), \
+         patch("app.agent.hr_agent.get_qwen_model"):
+
+        from app.agent.hr_agent import HRAgent, _html_store
 
         agent = HRAgent()
         result = agent.run(resume, JD_TEXT)
@@ -68,21 +52,37 @@ def test_agent_run_completes_full_loop():
     assert result.session_id in _html_store
 
 
-def test_agent_raises_on_loop_limit():
-    """Agent raises AgentLoopError when loop exceeds max iterations."""
-    from app.types.models import Resume
+def test_agent_raises_agent_loop_error_on_recursion():
+    """HRAgent.run raises AgentLoopError when LangGraph hits recursion limit."""
+    from langgraph.errors import GraphRecursionError
 
     resume = Resume(**RESUME_DICT)
 
-    with patch("app.agent.hr_agent.Anthropic") as MockAnthropic, \
-         patch("app.agent.hr_agent.run_parse_jd", return_value={}):
+    fake_graph = MagicMock()
+    fake_graph.invoke.side_effect = GraphRecursionError("recursion limit")
 
-        mock_client = MockAnthropic.return_value
-        # Always return tool_use, never end_turn
-        mock_client.messages.create.return_value = _make_tool_use_response(
-            "parse_jd", {"jd_text": JD_TEXT}
-        )
+    with patch("app.agent.hr_agent.create_react_agent", return_value=fake_graph), \
+         patch("app.agent.hr_agent.get_qwen_model"):
 
-        agent = HRAgent(max_iterations=3)
-        with pytest.raises(AgentLoopError):
+        from app.agent.hr_agent import HRAgent, AgentLoopError
+
+        agent = HRAgent()
+        with pytest.raises(AgentLoopError, match="maximum iterations"):
+            agent.run(resume, JD_TEXT)
+
+
+def test_agent_raises_when_report_store_empty():
+    """HRAgent.run raises AgentLoopError if score_candidate tool never wrote to store."""
+    resume = Resume(**RESUME_DICT)
+
+    fake_graph = MagicMock()
+    fake_graph.invoke.return_value = {"messages": [AIMessage(content="done")]}
+
+    with patch("app.agent.hr_agent.create_react_agent", return_value=fake_graph), \
+         patch("app.agent.hr_agent.get_qwen_model"):
+
+        from app.agent.hr_agent import HRAgent, AgentLoopError
+
+        agent = HRAgent()
+        with pytest.raises(AgentLoopError, match="score report"):
             agent.run(resume, JD_TEXT)
