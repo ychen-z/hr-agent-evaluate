@@ -2,7 +2,7 @@ import json
 import re
 from langchain_core.messages import HumanMessage
 from app.types.models import JDRequirements
-from app.utils.llm import get_qwen_model
+from app.utils.llm import get_minmax_model
 
 _PROMPT_TEMPLATE = """从以下职位描述中提取结构化需求，返回JSON格式。
 
@@ -22,7 +22,7 @@ education_level 只能是以下之一：大专、本科、硕士、博士"""
 
 class JDParser:
     def __init__(self):
-        self.model = get_qwen_model()
+        self.model = get_minmax_model()
 
     def parse(self, jd_text: str) -> JDRequirements:
         """Parse a job description text into structured JDRequirements.

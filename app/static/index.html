@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>HR Agent - 智能简历匹配系统</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            * {
+                font-family: system-ui, sans-serif;
+            }
+            .gradient-bg {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+            .card-shadow {
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            }
+            .btn-primary {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                transition: all 0.3s ease;
+            }
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            }
+            .btn-primary:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+            .loading-spinner {
+                border: 3px solid #f3f3f3;
+                border-top: 3px solid #667eea;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                animation: spin 1s linear infinite;
+                display: inline-block;
+            }
+            @keyframes spin {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+            .fade-in {
+                animation: fadeIn 0.5s ease-out;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            .score-ring {
+                background: conic-gradient(#667eea calc(var(--score) * 1%), #e5e7eb calc(var(--score) * 1%));
+            }
+            .agent-step {
+                transition: all 0.3s ease;
+            }
+            .agent-step.active {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+                border-left: 3px solid #667eea;
+            }
+            .agent-step.completed .step-icon {
+                background: #10b981 !important;
+            }
+            .agent-step.processing .step-icon {
+                background: #667eea !important;
+                animation: pulse 1.5s infinite;
+            }
+            @keyframes pulse {
+                0%,
+                100% {
+                    transform: scale(1);
+                }
+                50% {
+                    transform: scale(1.1);
+                }
+            }
+            .report-iframe {
+                border: none;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            }
+        </style>
+    </head>
+    <body class="bg-gray-50 min-h-screen">
+        <header class="gradient-bg text-white py-6 px-4 shadow-lg">
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold">HR Agent</h1>
+                        <p class="text-white/70 text-sm">智能简历匹配系统</p>
+                    </div>
+                </div>
+                <span class="px-3 py-1 bg-white/20 rounded-full text-sm">Powered by AI</span>
+            </div>
+        </header>
+
+        <main class="max-w-6xl mx-auto px-4 py-8">
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Left Panel -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl card-shadow p-6">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                            <h2 class="font-semibold text-gray-800">职位描述</h2>
+                        </div>
+                        <textarea id="jobDescription" class="w-full h-40 p-4 border border-gray-200 rounded-xl resize-none focus:outline-none focus:border-purple-400 text-sm" placeholder="请输入职位描述，例如：&#10;招聘高级Python开发工程师，要求：&#10;- 3年以上Python开发经验&#10;- 熟悉FastAPI、Django等Web框架&#10;- 本科及以上学历"></textarea>
+                    </div>
+
+                    <div class="bg-white rounded-2xl card-shadow p-6">
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                            <h2 class="font-semibold text-gray-800">候选人简历</h2>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <input type="text" id="name" class="p-3 border border-gray-200 rounded-xl text-sm" placeholder="姓名" value="张三">
+                            <input type="email" id="email" class="p-3 border border-gray-200 rounded-xl text-sm" placeholder="邮箱" value="zhangsan@example.com">
+                        </div>
+                        <input type="tel" id="phone" class="w-full p-3 border border-gray-200 rounded-xl text-sm mb-4" placeholder="电话" value="13800138000">
+
+                        <div class="mb-4">
+                            <label class="text-sm font-medium text-gray-600 mb-2 block">教育背景</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="school" class="p-2 border border-gray-200 rounded-lg text-sm" placeholder="学校" value="北京大学">
+                                <input type="text" id="major" class="p-2 border border-gray-200 rounded-lg text-sm" placeholder="专业" value="计算机科学">
+                                <select id="degree" class="p-2 border border-gray-200 rounded-lg text-sm">
+                                    <option value="本科" selected>本科</option>
+                                    <option value="硕士">硕士</option>
+                                    <option value="博士">博士</option>
+                                </select>
+                                <input type="number" id="gradYear" class="p-2 border border-gray-200 rounded-lg text-sm" placeholder="毕业年份" value="2018">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="text-sm font-medium text-gray-600 mb-2 block">工作经验</label>
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <input type="text" id="company" class="p-2 border border-gray-200 rounded-lg text-sm" placeholder="公司" value="字节跳动">
+                                <input type="text" id="position" class="p-2 border border-gray-200 rounded-lg text-sm" placeholder="职位" value="高级Python工程师">
+                                <input type="text" id="duration" class="p-2 border border-gray-200 rounded-lg text-sm" placeholder="工作时长" value="4年">
+                            </div>
+                            <textarea id="expDesc" class="w-full p-2 border border-gray-200 rounded-lg text-sm h-16 resize-none" placeholder="工作描述">负责后端API开发，使用Python和FastAPI构建高性能微服务架构</textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-sm font-medium text-gray-600 mb-2 block">技术技能</label>
+                                <input type="text" id="skills" class="w-full p-2 border border-gray-200 rounded-lg text-sm" placeholder="用逗号分隔" value="Python, FastAPI, Django, PostgreSQL, Redis">
+                            </div>
+                            <div>
+                                <label class="text-sm font-medium text-gray-600 mb-2 block">软技能</label>
+                                <input type="text" id="softSkills" class="w-full p-2 border border-gray-200 rounded-lg text-sm" placeholder="用逗号分隔" value="沟通能力, 团队协作, 问题解决">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="submitBtn" class="w-full btn-primary text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+          开始 Agent 评估
+        </button>
+                </div>
+
+                <!-- Right Panel -->
+                <div class="space-y-6">
+                    <div id="agentSteps" class="bg-white rounded-2xl card-shadow p-6 hidden">
+                        <div class="flex items-center gap-2 mb-6">
+                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                                </svg>
+                            </div>
+                            <h2 class="font-semibold text-gray-800">Agent 执行过程</h2>
+                        </div>
+                        <div class="space-y-4">
+                            <div id="step1" class="agent-step p-4 rounded-xl border border-gray-100 flex items-start gap-4">
+                                <div class="step-icon w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-white font-bold shrink-0">1</div>
+                                <div>
+                                    <h3 class="font-medium text-gray-800">解析职位描述</h3>
+                                    <p class="text-sm text-gray-500 mt-1">调用 parse_jd 工具提取结构化需求</p>
+                                    <div id="step1Result" class="mt-2 text-sm hidden"></div>
+                                </div>
+                            </div>
+                            <div id="step2" class="agent-step p-4 rounded-xl border border-gray-100 flex items-start gap-4">
+                                <div class="step-icon w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-white font-bold shrink-0">2</div>
+                                <div>
+                                    <h3 class="font-medium text-gray-800">评估候选人</h3>
+                                    <p class="text-sm text-gray-500 mt-1">调用 score_candidate 工具计算匹配分数</p>
+                                    <div id="step2Result" class="mt-2 text-sm hidden"></div>
+                                </div>
+                            </div>
+                            <div id="step3" class="agent-step p-4 rounded-xl border border-gray-100 flex items-start gap-4">
+                                <div class="step-icon w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-white font-bold shrink-0">3</div>
+                                <div>
+                                    <h3 class="font-medium text-gray-800">生成报告</h3>
+                                    <p class="text-sm text-gray-500 mt-1">调用 generate_report_html 工具生成可视化报告</p>
+                                    <div id="step3Result" class="mt-2 text-sm hidden"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="scoreCard" class="bg-white rounded-2xl card-shadow p-6 hidden fade-in">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="font-semibold text-gray-800">评估结果</h2>
+                            <span id="recommendation" class="px-4 py-1 rounded-full text-sm font-medium"></span>
+                        </div>
+                        <div class="flex items-center gap-6 mb-6">
+                            <div class="relative w-28 h-28">
+                                <div id="scoreRing" class="score-ring w-full h-full rounded-full flex items-center justify-center" style="--score: 0">
+                                    <div class="w-20 h-20 bg-white rounded-full flex flex-col items-center justify-center">
+                                        <span id="scoreNum" class="text-3xl font-bold text-gray-800">0</span>
+                                        <span class="text-xs text-gray-500">总分</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <div id="dimensionScores" class="space-y-3"></div>
+                            </div>
+                        </div>
+                        <div class="border-t pt-4">
+                            <h3 class="text-sm font-medium text-gray-600 mb-2">评估理由</h3>
+                            <p id="reasoning" class="text-sm text-gray-700 leading-relaxed"></p>
+                        </div>
+                    </div>
+
+                    <div id="reportPreview" class="bg-white rounded-2xl card-shadow p-6 hidden fade-in">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="font-semibold text-gray-800">HTML 报告</h2>
+                            <button id="openReportBtn" class="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                </svg>
+              新窗口打开
+            </button>
+                        </div>
+                        <iframe id="reportFrame" class="w-full h-96 report-iframe bg-gray-50"></iframe>
+                    </div>
+
+                    <div id="errorBox" class="bg-red-50 border border-red-200 rounded-2xl p-6 hidden">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-6 h-6 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <h3 class="font-medium text-red-800">评估失败</h3>
+                                <p id="errorMsg" class="text-sm text-red-600 mt-1"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="emptyState" class="bg-white rounded-2xl card-shadow p-12 text-center">
+                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-700 mb-2">准备就绪</h3>
+                        <p class="text-gray-500 text-sm">填写职位描述和候选人信息，点击"开始 Agent 评估"按钮</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <script>
+            (function () {
+                let currentSessionId = null;
+
+                function buildResume() {
+                    return {
+                        name: document
+                            .getElementById('name')
+                            .value,
+                        email: document
+                            .getElementById('email')
+                            .value,
+                        phone: document
+                            .getElementById('phone')
+                            .value,
+                        education: [
+                            {
+                                degree: document
+                                    .getElementById('degree')
+                                    .value,
+                                major: document
+                                    .getElementById('major')
+                                    .value,
+                                school: document
+                                    .getElementById('school')
+                                    .value,
+                                year: parseInt(document.getElementById('gradYear').value) || 2020
+                            }
+                        ],
+                        experience: [
+                            {
+                                company: document
+                                    .getElementById('company')
+                                    .value,
+                                position: document
+                                    .getElementById('position')
+                                    .value,
+                                duration: document
+                                    .getElementById('duration')
+                                    .value,
+                                description: document
+                                    .getElementById('expDesc')
+                                    .value
+                            }
+                        ],
+                        skills: document
+                            .getElementById('skills')
+                            .value
+                            .split(',')
+                            .map(s => s.trim())
+                            .filter(s => s),
+                        soft_skills: document
+                            .getElementById('softSkills')
+                            .value
+                            .split(',')
+                            .map(s => s.trim())
+                            .filter(s => s)
+                    };
+                }
+
+                function setLoading(loading) {
+                    const btn = document.getElementById('submitBtn');
+                    if (loading) {
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="loading-spinner"></span> Agent 处理中...';
+                    } else {
+                        btn.disabled = false;
+                        btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> 开始 Agent 评估';
+                    }
+                }
+
+                function showError(msg) {
+                    document
+                        .getElementById('emptyState')
+                        .classList
+                        .add('hidden');
+                    document
+                        .getElementById('scoreCard')
+                        .classList
+                        .add('hidden');
+                    document
+                        .getElementById('reportPreview')
+                        .classList
+                        .add('hidden');
+                    document
+                        .getElementById('errorBox')
+                        .classList
+                        .remove('hidden');
+                    document
+                        .getElementById('errorMsg')
+                        .textContent = msg;
+                }
+
+                function updateStep(stepNum, status, result) {
+                    const step = document.getElementById('step' + stepNum);
+                    const resultEl = document.getElementById('step' + stepNum + 'Result');
+                    step
+                        .classList
+                        .remove('active', 'completed', 'processing');
+                    if (status === 'processing') {
+                        step
+                            .classList
+                            .add('processing', 'active');
+                    } else if (status === 'completed') {
+                        step
+                            .classList
+                            .add('completed');
+                        if (result) {
+                            resultEl
+                                .classList
+                                .remove('hidden');
+                            resultEl.innerHTML = '<div class="bg-green-50 text-green-700 p-2 rounded-lg">' + result + '</div>';
+                        }
+                    }
+                }
+
+                function animateScore(target) {
+                    const scoreNum = document.getElementById('scoreNum');
+                    const scoreRing = document.getElementById('scoreRing');
+                    let current = 0;
+                    const step = target / 60;
+                    function animate() {
+                        current += step;
+                        if (current >= target) {
+                            current = target;
+                            scoreNum.textContent = Math.round(current);
+                            scoreRing
+                                .style
+                                .setProperty('--score', current);
+                        } else {
+                            scoreNum.textContent = Math.round(current);
+                            scoreRing
+                                .style
+                                .setProperty('--score', current);
+                            requestAnimationFrame(animate);
+                        }
+                    }
+                    requestAnimationFrame(animate);
+                }
+
+                function renderDimensionScores(dimensions) {
+                    const container = document.getElementById('dimensionScores');
+                    const labels = {
+                        hard_skills: '技术技能',
+                        experience: '工作经验',
+                        education: '教育背景',
+                        soft_skills: '软技能'
+                    };
+                    let html = '';
+                    for (const key in dimensions) {
+                        const data = dimensions[key];
+                        const score = data.score || 0;
+                        const label = labels[key] || key;
+                        html += '<div class="flex items-center gap-3"><span class="text-sm text-gray-600 w-16">' + label + '</span><div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full transition-all duration-1000" style="width:' + score + '%"></div></div><span class="text-sm font-medium text-gray-700 w-8">' + score + '</span></div>';
+                    }
+                    container.innerHTML = html;
+                }
+
+                function openReport() {
+                    if (currentSessionId) {
+                        window.open('/api/v1/agent/report/' + currentSessionId, '_blank');
+                    }
+                }
+
+                async function runAgent() {
+                    const jd = document
+                        .getElementById('jobDescription')
+                        .value;
+                    if (!jd || jd.trim().length < 5) {
+                        showError('请输入有效的职位描述（至少5个字符）');
+                        return;
+                    }
+                    const resume = buildResume();
+                    if (!resume.name || !resume.skills.length) {
+                        showError('请填写候选人姓名和至少一项技能');
+                        return;
+                    }
+
+                    setLoading(true);
+                    document
+                        .getElementById('emptyState')
+                        .classList
+                        .add('hidden');
+                    document
+                        .getElementById('errorBox')
+                        .classList
+                        .add('hidden');
+                    document
+                        .getElementById('scoreCard')
+                        .classList
+                        .add('hidden');
+                    document
+                        .getElementById('reportPreview')
+                        .classList
+                        .add('hidden');
+                    document
+                        .getElementById('agentSteps')
+                        .classList
+                        .remove('hidden');
+
+                    for (let i = 1; i <= 3; i++) {
+                        document
+                            .getElementById('step' + i)
+                            .classList
+                            .remove('active', 'completed', 'processing');
+                        document
+                            .getElementById('step' + i + 'Result')
+                            .classList
+                            .add('hidden');
+                    }
+
+                    updateStep(1, 'processing');
+
+                    try {
+                        const response = await fetch('/api/v1/agent/match', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-API-Key': 'test-key'
+                            },
+                            body: JSON.stringify({resume: resume, job_description: jd})
+                        });
+
+                        if (!response.ok) {
+                            const err = await response.json();
+                            throw new Error(err.detail || '请求失败');
+                        }
+
+                        const data = await response.json();
+                        currentSessionId = data.session_id;
+
+                        updateStep(1, 'completed', '✓ 已提取职位需求');
+                        await new Promise(r => setTimeout(r, 300));
+                        updateStep(2, 'processing');
+                        await new Promise(r => setTimeout(r, 500));
+                        updateStep(2, 'completed', '✓ 总分: ' + data.report.overall_score);
+                        await new Promise(r => setTimeout(r, 300));
+                        updateStep(3, 'processing');
+                        await new Promise(r => setTimeout(r, 500));
+                        updateStep(3, 'completed', '✓ HTML 报告已生成');
+                        await new Promise(r => setTimeout(r, 300));
+
+                        document
+                            .getElementById('scoreCard')
+                            .classList
+                            .remove('hidden');
+                        const recEl = document.getElementById('recommendation');
+                        if (data.report.recommendation === '推荐') {
+                            recEl.textContent = '✓ 推荐';
+                            recEl.className = 'px-4 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700';
+                        } else {
+                            recEl.textContent = '✗ 不推荐';
+                            recEl.className = 'px-4 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700';
+                        }
+
+                        animateScore(data.report.overall_score);
+                        renderDimensionScores(data.report.dimensions || {});
+                        document
+                            .getElementById('reasoning')
+                            .textContent = data.reasoning || (
+                                data.report.reasons
+                                ? data.report.reasons.join('；')
+                                : '评估完成');
+
+                        if (data.html) {
+                            document
+                                .getElementById('reportPreview')
+                                .classList
+                                .remove('hidden');
+                            document
+                                .getElementById('reportFrame')
+                                .srcdoc = data.html;
+                        }
+                    } catch (error) {
+                        showError(error.message);
+                    } finally {
+                        setLoading(false);
+                    }
+                }
+
+                // 绑定事件
+                document
+                    .getElementById('submitBtn')
+                    .addEventListener('click', runAgent);
+                document
+                    .getElementById('openReportBtn')
+                    .addEventListener('click', openReport);
+            })();
+        </script>
+    </body>
+</html>

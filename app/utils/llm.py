@@ -17,3 +17,18 @@ def get_qwen_model() -> ChatOpenAI:
         max_tokens=4096,
         extra_body={"enable_thinking": False},
     )
+
+
+def get_minmax_model() -> ChatOpenAI:
+    """Return a ChatOpenAI instance configured for Qwen3-32b via DashScope.
+
+    Raises KeyError if DASHSCOPE_API_KEY is not set in the environment.
+    """
+    return ChatOpenAI(
+        model="MiniMax-M2.5",
+        base_url=os.environ["BASE_URL"],
+        api_key=os.environ["DASHSCOPE_API_KEY"],
+        temperature=0.1,
+        max_tokens=4096,
+        extra_body={"enable_thinking": False},
+    )

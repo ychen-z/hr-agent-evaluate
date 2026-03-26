@@ -10,7 +10,7 @@ from app.agent.tools.generate_report_html import run_generate_report_html
 from app.agent.tools.parse_jd import parse_jd_tool
 from app.agent.tools.score_candidate import run_score_candidate
 from app.types.models import AgentResult, MatchReport, Resume
-from app.utils.llm import get_qwen_model
+from app.utils.llm import get_qwen_model,get_minmax_model
 
 # Module-level stores keyed by session_id (string).
 # Safe under CPython GIL with single-worker uvicorn.
@@ -57,7 +57,7 @@ def _make_tools(session_id: str) -> list:
 class HRAgent:
     def run(self, resume: Resume, jd_text: str) -> AgentResult:
         session_id = str(uuid.uuid4())  # always a string
-        model = get_qwen_model()
+        model = get_minmax_model()
         tools = _make_tools(session_id)
 
         # ToolNode with handle_tool_errors=True: tool exceptions are caught and

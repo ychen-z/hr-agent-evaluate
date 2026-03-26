@@ -3,7 +3,6 @@ from app.types.models import Resume, JDRequirements
 from app.pipeline.matcher import Matcher
 from app.pipeline.reporter import Reporter
 
-
 def run_score_candidate(resume: dict, requirements: dict) -> dict:
     """Score a candidate resume against parsed JD requirements.
 
@@ -16,7 +15,7 @@ def run_score_candidate(resume: dict, requirements: dict) -> dict:
     except (ValidationError, KeyError, TypeError) as e:
         raise ValueError(f"Invalid input: {e}") from e
 
-    matcher = Matcher()
+    matcher = Matcher() 
     reporter = Reporter()
     dimension_scores = matcher.match(resume_obj, req_obj)
     report = reporter.generate(dimension_scores)
