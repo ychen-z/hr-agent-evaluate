@@ -33,12 +33,23 @@ class DimensionScore(BaseModel):
     matched: list[str] = []
     missing: list[str] = []
     detail: Optional[str] = None
+    
+    # AI 增强字段
+    baseline_score: Optional[int] = None  # 算法基准分
+    adjustment_reasoning: Optional[str] = None  # AI 调整推理
+    highlights: Optional[list[str]] = None  # 亮点
+    concerns: Optional[list[str]] = None  # 关注点
 
 class MatchReport(BaseModel):
     overall_score: int
     dimensions: dict
     recommendation: str
     reasons: list[str]
+    
+    # AI 增强字段
+    overall_assessment: Optional[dict] = None  # AI 整体评估
+    top_strengths: Optional[list[str]] = None  # 核心优势
+    key_concerns: Optional[list[str]] = None  # 关键关注点
 
 class MatchRequest(BaseModel):
     resume: Resume

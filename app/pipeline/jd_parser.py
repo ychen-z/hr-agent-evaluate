@@ -1,8 +1,10 @@
-import json
-import re
-from langchain_core.messages import HumanMessage
 from app.types.models import JDRequirements
 from app.utils.llm import get_minmax_model
+from app.utils.llm_client import LLMClient
+
+import logging
+
+logger = logging.getLogger("hr_agent.jd_parser")
 
 _PROMPT_TEMPLATE = """你是一个职位需求提取助手。从职位描述中提取结构化信息,以JSON格式返回。
 
@@ -30,7 +32,8 @@ _PROMPT_TEMPLATE = """你是一个职位需求提取助手。从职位描述中�
 
 class JDParser:
     def __init__(self):
-        self.model = get_minmax_model()
+        model = get_minmax_model()
+        self.llm_client = LLMClient(model)
 
     def parse(self, jd_text: str) -> JDRequirements:
         """Parse a job description text into structured JDRequirements.
@@ -39,41 +42,9 @@ class JDParser:
         """
         prompt = _PROMPT_TEMPLATE.format(jd_text=jd_text)
         try:
-            response = self.model.invoke([HumanMessage(content=prompt)])
-            content = response.content
-            
-            # DEBUG: 记录原始响应
-            import logging
-            logger = logging.getLogger("hr_agent.tools")
-            logger.info(f"[DEBUG] LLM raw response (len={len(content)}): {content[:300]}...")
-            
-            # Check for empty response
-            if not content or content.isspace():
-                raise ValueError("LLM returned empty response")
-            
-            # Try to extract JSON from markdown fences or code blocks
-            # Pattern 1: ```json ... ```
-            json_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", content, re.DOTALL | re.IGNORECASE)
-            if json_match:
-                content = json_match.group(1)
-                logger.info(f"[DEBUG] Extracted from markdown: {content[:200]}...")
-            else:
-                # Pattern 2: Just strip leading/trailing fences
-                content = re.sub(r"^```(?:json)?\s*", "", content.strip(), flags=re.IGNORECASE)
-                content = re.sub(r"\s*```$", "", content.strip())
-                
-                # Pattern 3: Try to find JSON object in text
-                if not content.startswith("{"):
-                    json_obj_match = re.search(r"\{.*\}", content, re.DOTALL)
-                    if json_obj_match:
-                        content = json_obj_match.group(0)
-                        logger.info(f"[DEBUG] Extracted JSON object from text: {content[:200]}...")
-            
-            logger.info(f"[DEBUG] Final content: {content[:200]}...")
-            
-            data = json.loads(content)
+            # 使用统一的 LLM 客户端
+            data = self.llm_client.invoke(prompt, expect_json=True)
+            logger.info(f"[JDParser] LLM response: {data}")
             return JDRequirements(**data)
-        except json.JSONDecodeError as e:
-            raise ValueError(f"Failed to parse JSON from LLM response: {e}\nContent: {content[:500]}") from e
         except Exception as e:
             raise ValueError(f"Failed to parse JD: {e}") from e

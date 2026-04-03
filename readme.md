@@ -22,6 +22,13 @@
 - 🎓 教育背景匹配度
 - 🤝 软技能匹配度
 
+**✨ AI 增强评分** (可选):
+
+- 🤖 使用 AI 进行深度评估,识别语义相似技能
+- 🧠 评估经验质量而非仅看年限
+- 💡 从项目经历推断软技能
+- 📝 提供详细的推理说明和亮点/关注点
+
 ### 3. 生成评估报告
 
 输出专业的 HTML 可视化报告，包含：
@@ -89,11 +96,32 @@ cp .env.example .env
 
 编辑 `.env` 文件：
 
-```
+```bash
+# 必填: LLM API Key
 DASHSCOPE_API_KEY=your_dashscope_api_key_here
-BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-API_KEY=your_api_key_here
+BASE_URL=https://api.minimaxi.com/v1
+
+# 可选: 启用 AI 增强评分 (默认: false)
+# 启用后使用 AI 深度评估候选人,成本约 ¥0.042/候选人
+USE_AI_ENHANCED_MATCHER=true
 ```
+
+**环境变量说明**:
+
+| 变量                      | 说明             | 默认值  | 必填 |
+| ------------------------- | ---------------- | ------- | ---- |
+| `DASHSCOPE_API_KEY`       | LLM API 密钥     | -       | 是   |
+| `BASE_URL`                | LLM API 地址     | -       | 是   |
+| `USE_AI_ENHANCED_MATCHER` | 启用 AI 增强评分 | `false` | 否   |
+
+**AI 增强评分特性**:
+
+- ✅ 识别语义相似的技能 (React vs Vue)
+- ✅ 评估经验质量 (项目复杂度、技术深度)
+- ✅ 从工作经历推断软技能 (带团队→领导力)
+- ✅ 提供详细推理说明、亮点和关注点
+- ✅ 失败时自动降级到算法评分 (保证可用性)
+- 📊 成本: 每个候选人约 ¥0.042 (~$0.006)
 
 ### 3. 启动项目
 
