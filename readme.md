@@ -60,10 +60,16 @@ hr-agent/
 │   └── main.py          # 应用入口
 ├── tests/               # 测试文件
 ├── docs/                # 文档
+│   └── components/      # 组件文档（详细技术文档）
 ├── .env                 # 环境变量配置（需自行创建）
 ├── .env.example         # 环境变量示例
 └── requirements.txt     # Python 依赖
 ```
+
+### 📖 详细文档
+
+- **[组件文档](./docs/components/)** - 各核心组件的详细技术文档
+  - [JDParser - 职位描述解析器](./docs/components/jd-parser.md)
 
 ## 🚀 快速开始
 
@@ -103,11 +109,10 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8001
 
 ## 🔌 API 接口
 
-| 方法 | 路径                                | 说明                 |
-| ---- | ----------------------------------- | -------------------- |
-| POST | `/api/v1/match`                     | 简历匹配（简单模式） |
-| POST | `/api/v1/agent/match`               | Agent 智能匹配       |
-| GET  | `/api/v1/agent/report/{session_id}` | 获取 HTML 报告       |
+| 方法 | 路径                                | 说明           |
+| ---- | ----------------------------------- | -------------- |
+| POST | `/api/v1/agent/match`               | Agent 智能匹配 |
+| GET  | `/api/v1/agent/report/{session_id}` | 获取 HTML 报告 |
 
 ### 请求示例
 
@@ -129,6 +134,65 @@ curl -X POST http://localhost:8001/api/v1/agent/match \
   }'
 ```
 
+## 📊 工具调用日志
+
+系统内置了轻量级的工具调用日志追踪功能,用于观测 AI Agent 的工具调用情况。
+
+### 日志配置
+
+通过 `ENV` 环境变量控制日志输出格式:
+
+**开发环境**(默认):
+
+```bash
+# 不设置 ENV 或设置为 development
+uvicorn app.main:app --reload
+```
+
+输出人类友好的格式:
+
+```
+🔧 [parse_jd] START
+   Call ID: parse_jd_1775197468673
+   Input: {'jd_text': 'Python工程师，3年经验，熟悉FastAPI'}
+
+✅ [parse_jd] END
+   Duration: 1245.32ms
+   Status: success
+   Output: {"hard_skills":["Python","FastAPI"],...}
+```
+
+**生产环境**:
+
+```bash
+ENV=production uvicorn app.main:app
+```
+
+输出结构化 JSON 格式:
+
+```json
+{"timestamp":"2026-04-03T06:23:55.093878Z","level":"INFO","logger":"hr_agent.tools","message":"Tool started: parse_jd","event":"tool_start","call_id":"parse_jd_1775197468673","tool_name":"parse_jd","input_preview":{"jd_text":"Python工程师..."}}
+{"timestamp":"2026-04-03T06:23:56.339210Z","level":"INFO","logger":"hr_agent.tools","message":"Tool finished: parse_jd","event":"tool_end","call_id":"parse_jd_1775197468673","tool_name":"parse_jd","duration_ms":1245.32,"status":"success","output_preview":"{\"hard_skills\":[..."}
+```
+
+### 日志字段说明
+
+| 字段             | 说明                                |
+| ---------------- | ----------------------------------- |
+| `event`          | 事件类型: `tool_start` / `tool_end` |
+| `call_id`        | 调用唯一标识                        |
+| `tool_name`      | 工具名称                            |
+| `duration_ms`    | 执行耗时(毫秒)                      |
+| `status`         | 执行状态: `success` / `error`       |
+| `input_preview`  | 输入参数预览(截断到100字符)         |
+| `output_preview` | 输出结果预览(截断到100字符)         |
+| `error`          | 异常信息(如有)                      |
+
+### 隐私保护
+
+- 输入输出自动截断到 100 字符,防止完整记录敏感信息
+- 生产环境建议配置适当的日志访问权限
+
 ## 🧪 运行测试
 
 ```bash
@@ -149,10 +213,6 @@ load_dotenv()
 ```
 
 本项目已在 `app/main.py` 中配置了自动加载。
-
-### Q: Mock 模式是什么？
-
-**A:** 当未配置 `DASHSCOPE_API_KEY` 或 `BASE_URL` 环境变量时，系统会自动切换到 Mock 模式，使用简单的规则匹配算法进行演示，无需调用 LLM API。
 
 ## 📄 许可证
 

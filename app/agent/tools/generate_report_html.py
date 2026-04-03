@@ -1,6 +1,7 @@
 import json
 import subprocess
 from pathlib import Path
+from app.utils.logger import traced_tool
 
 _SKILL_SCRIPT = Path.home() / ".codemaker" / "skills" / "ui-ux-pro-max" / "scripts" / "search.py"
 
@@ -233,6 +234,7 @@ def _render_html(report: dict, tokens: dict) -> str:
 </html>"""
 
 
+@traced_tool("generate_report_html")
 def run_generate_report_html(report: dict) -> str:
     """Generate a professional HTML report from a MatchReport dict. Returns raw HTML string."""
     tokens = _gather_design_tokens()

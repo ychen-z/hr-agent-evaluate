@@ -2,7 +2,9 @@ from pydantic import ValidationError
 from app.types.models import Resume, JDRequirements
 from app.pipeline.matcher import Matcher
 from app.pipeline.reporter import Reporter
+from app.utils.logger import traced_tool
 
+@traced_tool("score_candidate")
 def run_score_candidate(resume: dict, requirements: dict) -> dict:
     """Score a candidate resume against parsed JD requirements.
 

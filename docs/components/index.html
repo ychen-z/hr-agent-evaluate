@@ -1,0 +1,3135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Agent 组件文档 - 技术演示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 280px; overflow-y: auto; }
+        .main-content { margin-left: 300px; padding: 2rem; max-width: 1200px; }
+        .nav-item { transition: all 0.2s; }
+        .nav-item:hover { background: #f3f4f6; transform: translateX(4px); }
+        .nav-item.active { background: #3b82f6; color: white; font-weight: 600; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .markdown-body { background: transparent !important; }
+        .markdown-body pre { background: #1e293b !important; }
+        #searchBox { border: 2px solid #e5e7eb; transition: all 0.3s; }
+        #searchBox:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .search-highlight { background-color: #fef08a; padding: 2px 4px; border-radius: 2px; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- 侧边栏 -->
+    <div class="sidebar bg-white border-r border-gray-200 shadow-sm">
+        <div class="p-6 border-b border-gray-200">
+            <h1 class="text-2xl font-bold text-gray-900">HR Agent</h1>
+            <p class="text-sm text-gray-500 mt-1">组件文档</p>
+        </div>
+        
+        <!-- 搜索框 -->
+        <div class="p-4">
+            <input 
+                type="text" 
+                id="searchBox" 
+                placeholder="🔍 搜索文档..." 
+                class="w-full px-4 py-2 rounded-lg outline-none"
+            />
+        </div>
+        
+        <!-- 导航 -->
+        <nav class="p-4 space-y-1">
+
+            <a href="#README" 
+               class="nav-item block px-4 py-2 rounded-lg text-sm cursor-pointer active"
+               data-section="README">
+                概览
+            </a>
+
+            <a href="#jd-parser" 
+               class="nav-item block px-4 py-2 rounded-lg text-sm cursor-pointer "
+               data-section="jd-parser">
+                JDParser - 职位描述解析器
+            </a>
+
+            <a href="#matcher" 
+               class="nav-item block px-4 py-2 rounded-lg text-sm cursor-pointer "
+               data-section="matcher">
+                Matcher - 匹配评分引擎
+            </a>
+
+            <a href="#reporter" 
+               class="nav-item block px-4 py-2 rounded-lg text-sm cursor-pointer "
+               data-section="reporter">
+                Reporter - 报告生成器
+            </a>
+
+            <a href="#hr-agent" 
+               class="nav-item block px-4 py-2 rounded-lg text-sm cursor-pointer "
+               data-section="hr-agent">
+                HRAgent - AI调度器
+            </a>
+
+            <a href="#tools" 
+               class="nav-item block px-4 py-2 rounded-lg text-sm cursor-pointer "
+               data-section="tools">
+                Tools - 工具集
+            </a>
+
+        </nav>
+        
+        <!-- 页脚信息 -->
+        <div class="p-4 border-t border-gray-200 mt-auto">
+            <p class="text-xs text-gray-500">
+                📅 最后更新: 2026-04-03<br>
+                📦 版本: v1.0.0
+            </p>
+        </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+
+        <section id="README" class="section active">
+            <div class="markdown-body bg-white rounded-lg shadow-sm p-8">
+                <div id="content-README"></div>
+            </div>
+        </section>
+
+        <section id="jd-parser" class="section ">
+            <div class="markdown-body bg-white rounded-lg shadow-sm p-8">
+                <div id="content-jd-parser"></div>
+            </div>
+        </section>
+
+        <section id="matcher" class="section ">
+            <div class="markdown-body bg-white rounded-lg shadow-sm p-8">
+                <div id="content-matcher"></div>
+            </div>
+        </section>
+
+        <section id="reporter" class="section ">
+            <div class="markdown-body bg-white rounded-lg shadow-sm p-8">
+                <div id="content-reporter"></div>
+            </div>
+        </section>
+
+        <section id="hr-agent" class="section ">
+            <div class="markdown-body bg-white rounded-lg shadow-sm p-8">
+                <div id="content-hr-agent"></div>
+            </div>
+        </section>
+
+        <section id="tools" class="section ">
+            <div class="markdown-body bg-white rounded-lg shadow-sm p-8">
+                <div id="content-tools"></div>
+            </div>
+        </section>
+
+    </div>
+    
+    <script>
+        // Markdown 内容
+        const markdownContent = {
+            "README": `# HR Agent 组件文档
+
+本目录包含 HR Agent 系统各个核心组件的详细文档。
+
+## 📚 组件列表
+
+### 1. JDParser (职位描述解析器)
+
+- **文档**: [jd-parser.md](./jd-parser.md)
+- **功能**: 使用 LLM 将非结构化职位描述转换为结构化需求对象
+- **输入**: JD 文本
+- **输出**: Requirements (技能、经验、学历、软技能)
+
+### 2. Matcher (匹配评分引擎)
+
+- **文档**: [matcher.md](./matcher.md)
+- **功能**: 对比简历与需求,计算多维度匹配分数
+- **输入**: Resume + Requirements
+- **输出**: DimensionScores (技能、经验、学历、软技能各维度评分)
+
+### 3. Reporter (报告生成器)
+
+- **文档**: [reporter.md](./reporter.md)
+- **功能**: 将评分结果转换为最终评估报告
+- **输入**: DimensionScores
+- **输出**: MatchReport (综合评分、推荐结论、理由)
+
+### 4. HRAgent (AI Agent 调度器)
+
+- **文档**: [hr-agent.md](./hr-agent.md)
+- **功能**: 基于 LangGraph ReAct 模式,智能编排整个评估流程
+- **输入**: Resume + JD Text
+- **输出**: AgentResult (报告 + HTML + 推理过程)
+
+### 5. Tools (工具集)
+
+- **文档**: [tools.md](./tools.md)
+- **功能**: 三个核心工具函数供 Agent 调用
+- **工具列表**:
+  - \`parse_jd\`: 解析职位描述
+  - \`score_candidate\`: 评分候选人
+  - \`generate_report_html\`: 生成 HTML 报告
+
+---
+
+## 🗂️ 文档导航
+
+### 按功能分类
+
+**数据处理**
+
+- [JDParser](./jd-parser.md) - JD 文本解析
+
+**匹配评分** (待补充)
+
+- Matcher - 简历与需求匹配
+- Reporter - 报告生成
+
+**AI Agent** (待补充)
+
+- HRAgent - Agent 主循环
+- Tools - Agent 工具集
+
+**前端界面** (待补充)
+
+- Frontend - 用户界面
+
+### 按开发阶段分类
+
+**已完成**
+
+- ✅ [JDParser](./jd-parser.md) - v1.1.0
+
+**待补充**
+
+- ⏳ Matcher
+- ⏳ Reporter
+- ⏳ HRAgent
+- ⏳ Tools
+- ⏳ Frontend
+
+---
+
+## 📝 文档模板
+
+每个组件文档应包含以下部分:
+
+1. **概述** - 组件的作用和定位
+2. **核心功能** - 主要功能说明
+3. **在系统中的位置** - 架构图和数据流
+4. **数据模型** - 输入输出定义
+5. **工作原理** - 实现细节
+6. **使用示例** - 代码示例
+7. **错误处理** - 常见错误和调试
+8. **性能考虑** - 优化建议
+9. **依赖关系** - 依赖库和模块
+10. **测试** - 单元测试示例
+11. **常见问题 (FAQ)** - 问答形式
+12. **未来改进方向** - 规划和展望
+13. **参考资料** - 相关链接
+14. **维护历史** - 版本记录
+
+---
+
+## 🔗 相关文档
+
+- [项目 README](../../readme.md)
+- [API 文档](../../docs/api/)
+- [架构设计](../../docs/architecture/)
+
+---
+
+## 🤝 贡献指南
+
+如果你想添加或更新组件文档:
+
+1. 使用上述文档模板
+2. 包含清晰的代码示例和图表
+3. 更新本索引文件
+4. 确保文档准确性和可读性
+
+---
+
+## 快速索引
+
+| 组件     | 核心功能         | 技术栈                 |
+| -------- | ---------------- | ---------------------- |
+| JDParser | LLM 解析职位描述 | MiniMax-M2.5, Pydantic |
+| Matcher  | 多维度匹配评分   | Python, 集合运算       |
+| Reporter | 生成评估报告     | Pydantic, 加权计算     |
+| HRAgent  | ReAct Agent 编排 | LangGraph, MiniMax     |
+| Tools    | 工具函数封装     | LangChain, 日志追踪    |
+
+---
+
+## 文档更新历史
+
+| 日期       | 组件     | 版本   |
+| ---------- | -------- | ------ |
+| 2026-04-03 | JDParser | v1.0.0 |
+| 2026-04-03 | Matcher  | v1.0.0 |
+| 2026-04-03 | Reporter | v1.0.0 |
+| 2026-04-03 | HRAgent  | v1.0.0 |
+| 2026-04-03 | Tools    | v1.0.0 |
+
+---
+
+最后更新: 2026-04-03
+`,
+            "jd-parser": `# JDParser 组件文档
+
+## 概述
+
+\`JDParser\` 是 HR Agent 系统的核心组件之一,负责将非结构化的职位描述(Job Description)文本转换为结构化数据。它是整个简历匹配流程的第一步,为后续的匹配和评分提供标准化的需求数据。
+
+## 核心功能
+
+### 功能定位
+
+**职位描述解析器** - 自动从 JD 文本中提取关键信息
+
+\`\`\`
+输入 (非结构化):                    输出 (结构化):
+┌──────────────────────────┐      ┌─────────────────────────┐
+│ "招聘高级Python工程师     │      │ JDRequirements:        │
+│  要求:                   │      │  - required_skills:    │
+│  - 3年以上开发经验        │ ──▶  │    ["Python","FastAPI"]│
+│  - 熟悉Python、FastAPI    │      │  - experience_years: 3 │
+│  - 本科学历              │      │  - education_level:    │
+│  - 良好的沟通能力"        │      │    "本科"              │
+└──────────────────────────┘      │  - soft_skills:        │
+   (自然语言文本)                    │    ["沟通能力"]        │
+                                   └─────────────────────────┘
+                                        (JSON 对象)
+\`\`\`
+
+## 在系统中的位置
+
+\`\`\`
+用户提交 JD 文本
+    │
+    ▼
+┌─────────────────────────────────────────────────────────┐
+│                    HR Agent                             │
+│  ┌───────────────────────────────────────────────────┐ │
+│  │  Agent 循环 (LangGraph)                           │ │
+│  │                                                   │ │
+│  │  Step 1: 调用 parse_jd 工具                      │ │
+│  │  ┌──────────────────────────────┐                │ │
+│  │  │  parse_jd_tool()             │                │ │
+│  │  │    ↓                         │                │ │
+│  │  │  JDParser.parse(jd_text) ◄───┼─ 这里!         │ │
+│  │  │    │                         │                │ │
+│  │  │    ├─ 1. 构建 prompt         │                │ │
+│  │  │    ├─ 2. 调用 LLM            │                │ │
+│  │  │    ├─ 3. 解析 JSON           │                │ │
+│  │  │    └─ 4. 返回 JDRequirements │                │ │
+│  │  └──────────────────────────────┘                │ │
+│  │           ▼                                       │ │
+│  │  返回: JDRequirements {                          │ │
+│  │    required_skills: ["Python", "FastAPI"],       │ │
+│  │    experience_years: 3,                          │ │
+│  │    education_level: "本科",                      │ │
+│  │    soft_skills: ["沟通能力"]                     │ │
+│  │  }                                               │ │
+│  │           ▼                                       │ │
+│  │  Step 2: 调用 score_candidate 工具               │ │
+│  │         (使用 JDRequirements 进行匹配)            │ │
+│  │           ▼                                       │ │
+│  │  Step 3: 生成报告                                │ │
+│  └───────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
+\`\`\`
+
+## 数据模型
+
+### 输入
+
+\`\`\`python
+jd_text: str  # 任意格式的职位描述文本
+\`\`\`
+
+**示例**:
+
+\`\`\`python
+jd_text = """
+招聘高级Python工程师
+要求:
+- 3年以上Python开发经验
+- 熟悉FastAPI、Django等Web框架
+- 本科及以上学历,计算机相关专业
+- 具备良好的沟通能力和团队协作精神
+"""
+\`\`\`
+
+### 输出
+
+\`\`\`python
+class JDRequirements(BaseModel):
+    required_skills: list[str]      # 技术技能要求列表
+    experience_years: int           # 工作年限要求(整数)
+    education_level: str            # 学历要求 ("大专"/"本科"/"硕士"/"博士")
+    soft_skills: list[str]          # 软技能要求列表
+\`\`\`
+
+**示例**:
+
+\`\`\`python
+JDRequirements(
+    required_skills=["Python", "FastAPI", "Django"],
+    experience_years=3,
+    education_level="本科",
+    soft_skills=["沟通能力", "团队协作"]
+)
+\`\`\`
+
+## 工作原理
+
+### 1. Prompt 工程
+
+JDParser 使用精心设计的 prompt 引导 LLM 提取结构化信息:
+
+\`\`\`\`python
+_PROMPT_TEMPLATE = """你是一个职位需求提取助手。从职位描述中提取结构化信息,以JSON格式返回。
+
+职位描述:
+{jd_text}
+
+请严格按照以下JSON格式返回(不要有任何其他文字):
+\`\`\`json
+{{
+  "required_skills": ["提取的技能1", "技能2"],
+  "experience_years": 提取的年限数字,
+  "education_level": "本科",
+  "soft_skills": ["软技能1", "软技能2"]
+}}
+\`\`\`\`
+
+规则:
+
+- required_skills: 技术技能列表
+- experience_years: 工作年限(整数),未提及则为0
+- education_level: 只能是 "大专"/"本科"/"硕士"/"博士" 之一,未提及则为"本科"
+- soft_skills: 软技能列表(沟通能力、团队协作等)
+
+只返回JSON,不要有其他解释文字。"""
+
+\`\`\`\`
+
+**设计要点**:
+- ✅ 明确角色定位("职位需求提取助手")
+- ✅ 提供清晰的 JSON 示例
+- ✅ 定义默认值规则(未提及时的处理)
+- ✅ 强调"只返回 JSON"(减少解释文字)
+
+### 2. LLM 调用
+
+使用 **MiniMax-M2.5** 模型进行语义理解和信息提取:
+
+\`\`\`python
+response = self.model.invoke([HumanMessage(content=prompt)])
+content = response.content  # LLM 返回的文本
+\`\`\`\`
+
+### 3. 智能 JSON 提取
+
+多策略提取 JSON,处理各种 LLM 响应格式:
+
+\`\`\`\`python
+# 策略 1: 提取 markdown 代码块
+# 匹配: \`\`\`json { ... } \`\`\`
+json_match = re.search(r"\`\`\`(?:json)?\\s*(\\{.*?\\})\\s*\`\`\`", content, re.DOTALL | re.IGNORECASE)
+if json_match:
+    content = json_match.group(1)
+
+# 策略 2: 去除代码围栏
+# 处理: \`\`\` { ... } \`\`\`
+content = re.sub(r"^\`\`\`(?:json)?\\s*", "", content.strip(), flags=re.IGNORECASE)
+content = re.sub(r"\\s*\`\`\`$", "", content.strip())
+
+# 策略 3: 从文本中查找 JSON 对象
+# 处理: 一些解释文字 { ... } 更多文字
+if not content.startswith("{"):
+    json_obj_match = re.search(r"\\{.*\\}", content, re.DOTALL)
+    if json_obj_match:
+        content = json_obj_match.group(0)
+\`\`\`\`
+
+**为什么需要多策略?**
+
+LLM 返回的格式可能不一致:
+
+- 有时带 markdown 代码块: \` \`\`\`json {...} \`\`\` \`
+- 有时只有代码围栏: \` \`\`\` {...} \`\`\` \`
+- 有时带解释文字: \`根据要求提取如下: {...} 以上是结果\`
+- 有时是纯 JSON: \`{...}\`
+
+### 4. 验证和转换
+
+\`\`\`python
+# JSON 解析
+data = json.loads(content)
+
+# Pydantic 模型验证
+return JDRequirements(**data)
+\`\`\`
+
+Pydantic 会自动验证:
+
+- 字段类型是否正确
+- 必需字段是否存在
+- 字段值是否符合约束
+
+## 使用示例
+
+### 基本使用
+
+\`\`\`python
+from app.pipeline.jd_parser import JDParser
+
+# 创建解析器实例
+parser = JDParser()
+
+# 解析 JD 文本
+jd_text = """
+招聘Python工程师
+要求:
+- 3年Python开发经验
+- 熟悉FastAPI
+- 本科学历
+"""
+
+requirements = parser.parse(jd_text)
+
+print(requirements.required_skills)    # ["Python", "FastAPI"]
+print(requirements.experience_years)   # 3
+print(requirements.education_level)    # "本科"
+print(requirements.soft_skills)        # []
+\`\`\`
+
+### 在 Agent 工具中使用
+
+\`\`\`python
+# app/agent/tools/parse_jd.py
+from app.pipeline.jd_parser import JDParser
+
+_parser: JDParser | None = None
+
+def _get_parser() -&gt; JDParser:
+    global _parser
+    if _parser is None:
+        _parser = JDParser()
+    return _parser
+
+@tool("parse_jd")
+def parse_jd_tool(jd_text: str) -&gt; str:
+    """解析职位描述文本，提取结构化需求"""
+    requirements = _get_parser().parse(jd_text)
+    return json.dumps(requirements.model_dump(), ensure_ascii=False)
+\`\`\`
+
+## 错误处理
+
+### 常见错误类型
+
+#### 1. 空响应错误
+
+\`\`\`python
+ValueError: LLM returned empty response
+\`\`\`
+
+**原因**: LLM API 返回空内容
+**可能场景**:
+
+- API 配额耗尽
+- 网络问题
+- 内容审查拦截
+
+#### 2. JSON 解析错误
+
+\`\`\`python
+ValueError: Failed to parse JSON from LLM response: Expecting value: line 1 column 1 (char 0)
+Content: &lt;实际内容&gt;
+\`\`\`
+
+**原因**: LLM 返回的不是有效 JSON
+**可能场景**:
+
+- LLM 返回纯文本解释
+- JSON 格式错误
+- 提取策略失败
+
+#### 3. 字段验证错误
+
+\`\`\`python
+pydantic.ValidationError: 1 validation error for JDRequirements
+experience_years
+  Input should be a valid integer
+\`\`\`
+
+**原因**: LLM 返回的字段类型不符合预期
+**可能场景**:
+
+- \`experience_years\` 是字符串 "3年" 而不是整数 3
+- \`required_skills\` 是字符串而不是列表
+
+### 调试方法
+
+#### 启用 DEBUG 日志
+
+\`\`\`python
+import logging
+logging.basicConfig(level=logging.INFO)
+
+# 运行 parser,会输出:
+# [DEBUG] LLM raw response (len=256): ...
+# [DEBUG] Extracted from markdown: ...
+# [DEBUG] Final content: ...
+\`\`\`
+
+#### 查看 LLM 原始响应
+
+\`\`\`python
+parser = JDParser()
+try:
+    requirements = parser.parse(jd_text)
+except ValueError as e:
+    print(f"解析失败: {e}")
+    # 错误消息中会包含 LLM 返回内容的前 500 字符
+\`\`\`
+
+## 性能考虑
+
+### 典型执行时间
+
+\`\`\`
+成功场景:
+- LLM 调用: 1-3 秒
+- JSON 提取和验证: &lt;10 毫秒
+- 总耗时: ~1-3 秒
+
+失败场景:
+- LLM 超时: 10+ 秒
+- 重试: 取决于重试策略
+\`\`\`
+
+### 优化建议
+
+#### 1. 单例模式
+
+\`\`\`python
+# ✅ 推荐: 复用同一个 parser 实例
+_parser = JDParser()  # 只创建一次
+
+def parse(jd_text: str):
+    return _parser.parse(jd_text)
+\`\`\`
+
+#### 2. 缓存结果
+
+\`\`\`python
+from functools import lru_cache
+
+@lru_cache(maxsize=100)
+def parse_jd_cached(jd_text: str) -&gt; JDRequirements:
+    """相同 JD 文本不重复调用 LLM"""
+    return parser.parse(jd_text)
+\`\`\`
+
+#### 3. 异步调用
+
+\`\`\`python
+async def parse_async(jd_text: str) -&gt; JDRequirements:
+    """异步版本,适合批量处理"""
+    response = await self.model.ainvoke([HumanMessage(content=prompt)])
+    # ... 后续处理
+\`\`\`
+
+## 依赖关系
+
+\`\`\`
+JDParser
+├── langchain_core.messages.HumanMessage  # LangChain 消息格式
+├── app.utils.llm.get_minmax_model       # LLM 模型获取
+├── app.types.models.JDRequirements      # 输出数据模型
+└── Python 标准库
+    ├── json                             # JSON 解析
+    └── re                               # 正则表达式
+\`\`\`
+
+## 测试
+
+### 单元测试示例
+
+\`\`\`\`python
+# tests/test_jd_parser.py
+from unittest.mock import MagicMock, patch
+from app.pipeline.jd_parser import JDParser
+
+def test_parse_valid_jd():
+    """测试正常的 JD 解析"""
+    with patch("app.pipeline.jd_parser.get_minmax_model") as mock_model:
+        # Mock LLM 响应
+        mock_response = MagicMock()
+        mock_response.content = '''
+        \`\`\`json
+        {
+          "required_skills": ["Python", "FastAPI"],
+          "experience_years": 3,
+          "education_level": "本科",
+          "soft_skills": ["沟通能力"]
+        }
+        \`\`\`
+        '''
+        mock_model.return_value.invoke.return_value = mock_response
+
+        # 执行测试
+        parser = JDParser()
+        result = parser.parse("招聘Python工程师，3年经验")
+
+        # 验证结果
+        assert result.required_skills == ["Python", "FastAPI"]
+        assert result.experience_years == 3
+        assert result.education_level == "本科"
+
+def test_parse_with_text_around_json():
+    """测试带解释文字的响应"""
+    with patch("app.pipeline.jd_parser.get_minmax_model") as mock_model:
+        mock_response = MagicMock()
+        mock_response.content = '根据要求提取如下: {"required_skills": ["Java"], "experience_years": 5, "education_level": "硕士", "soft_skills": []} 以上是结果'
+        mock_model.return_value.invoke.return_value = mock_response
+
+        parser = JDParser()
+        result = parser.parse("招聘Java工程师")
+
+        assert result.required_skills == ["Java"]
+        assert result.experience_years == 5
+
+def test_parse_empty_response():
+    """测试空响应处理"""
+    with patch("app.pipeline.jd_parser.get_minmax_model") as mock_model:
+        mock_response = MagicMock()
+        mock_response.content = ""
+        mock_model.return_value.invoke.return_value = mock_response
+
+        parser = JDParser()
+
+        with pytest.raises(ValueError, match="LLM returned empty response"):
+            parser.parse("测试文本")
+\`\`\`\`
+
+## 常见问题 (FAQ)
+
+### Q1: JDParser 支持哪些语言?
+
+**A**: 目前 prompt 是中文设计的,主要支持中文 JD。如需支持英文或其他语言,需要修改 \`_PROMPT_TEMPLATE\`。
+
+### Q2: 如何提高解析准确率?
+
+**A**:
+
+1. 改进 prompt 模板,提供更清晰的示例
+2. 在 prompt 中添加领域专有名词列表
+3. 使用更强大的 LLM 模型
+4. 对特定行业定制 prompt
+
+### Q3: 解析失败率大概多少?
+
+**A**:
+
+- 正常格式的 JD: &lt;5% 失败率
+- 格式混乱的 JD: 10-20% 失败率
+- 主要失败原因: LLM 返回格式不符合预期
+
+### Q4: 能否不使用 LLM,直接用规则提取?
+
+**A**: 可以,但效果会差很多:
+
+- ✅ 规则方法: 速度快,成本低
+- ❌ 规则方法: 准确率低,维护困难
+- ✅ LLM 方法: 准确率高,适应性强
+- ❌ LLM 方法: 速度慢,有调用成本
+
+### Q5: 如何处理复杂的 JD(如多个岗位合并)?
+
+**A**:
+
+1. 在 prompt 中明确说明"只提取第一个岗位"
+2. 或者预处理 JD,拆分成多个独立岗位
+3. 或者扩展 \`JDRequirements\` 模型支持多岗位
+
+## 未来改进方向
+
+### 1. 支持更多字段
+
+\`\`\`python
+class JDRequirements(BaseModel):
+    required_skills: list[str]
+    experience_years: int
+    education_level: str
+    soft_skills: list[str]
+    # 新增字段
+    salary_range: Optional[tuple[int, int]] = None  # 薪资范围
+    location: Optional[str] = None                   # 工作地点
+    company_size: Optional[str] = None               # 公司规模
+    industry: Optional[str] = None                   # 行业领域
+\`\`\`
+
+### 2. 结构化输出 (Structured Output)
+
+使用 LLM 的 structured output 功能,强制返回符合 schema 的 JSON:
+
+\`\`\`python
+from langchain_core.output_parsers import JsonOutputParser
+
+parser = JsonOutputParser(pydantic_object=JDRequirements)
+chain = prompt | model | parser
+result = chain.invoke({"jd_text": jd_text})
+\`\`\`
+
+### 3. 增加置信度评分
+
+\`\`\`python
+class JDRequirements(BaseModel):
+    required_skills: list[str]
+    experience_years: int
+    education_level: str
+    soft_skills: list[str]
+    confidence: float  # 0-1, 表示提取的置信度
+\`\`\`
+
+### 4. 支持增量提取
+
+用户可以手动修正提取结果:
+
+\`\`\`python
+requirements = parser.parse(jd_text)
+# 用户修正
+requirements.required_skills.append("Docker")
+# 保存修正结果用于训练
+\`\`\`
+
+## 参考资料
+
+- [LangChain 文档](https://python.langchain.com/)
+- [Pydantic 文档](https://docs.pydantic.dev/)
+- [MiniMax API 文档](https://www.minimaxi.com/document/guides)
+- [Prompt Engineering 最佳实践](https://platform.openai.com/docs/guides/prompt-engineering)
+
+## 维护历史
+
+| 日期       | 版本  | 变更说明                              |
+| ---------- | ----- | ------------------------------------- |
+| 2026-04-03 | 1.1.0 | 增加多策略 JSON 提取,改进 prompt 模板 |
+| 2026-03-23 | 1.0.0 | 初始版本,基于 MiniMax 模型            |
+`,
+            "matcher": `# Matcher 组件文档
+
+## 概述
+
+\`Matcher\` 是 HR Agent 系统的核心评分组件,负责将候选人简历与职位需求进行多维度匹配,计算各个维度的匹配分数。它是连接 JDParser 和 Reporter 的桥梁,在整个评估流程中处于核心位置。
+
+## 核心功能
+
+### 功能定位
+
+**简历-需求匹配引擎** - 计算候选人与岗位的匹配度
+
+\`\`\`
+输入:                                       输出:
+┌────────────────┐                      ┌──────────────────────┐
+│ Resume         │                      │ DimensionScores:     │
+│ - skills       │                      │  hard_skills:        │
+│ - experience   │  ─────▶ Matcher ──▶  │    score: 80         │
+│ - education    │                      │    matched: [...]    │
+│ - soft_skills  │                      │  experience:         │
+└────────────────┘                      │    score: 100        │
+┌────────────────┐                      │  education:          │
+│ JDRequirements │                      │    score: 100        │
+│ - required_    │                      │  soft_skills:        │
+│   skills       │                      │    score: 75         │
+│ - experience_  │                      └──────────────────────┘
+│   years        │
+│ - education_   │
+│   level        │
+│ - soft_skills  │
+└────────────────┘
+\`\`\`
+
+## 在系统中的位置
+
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│                   评估流程                               │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│  Step 1: JDParser                                      │
+│  ┌──────────────────────┐                             │
+│  │ JD Text → JDRequirements                           │
+│  └──────────┬───────────┘                             │
+│             │                                          │
+│             ▼                                          │
+│  Step 2: Matcher ◄─── 这里!                           │
+│  ┌──────────────────────┐                             │
+│  │ Resume + Requirements                              │
+│  │        ↓                                           │
+│  │ 计算四个维度匹配度:                                  │
+│  │  • 技术技能 (40%)                                   │
+│  │  • 工作经验 (30%)                                   │
+│  │  • 教育背景 (15%)                                   │
+│  │  • 软技能 (15%)                                     │
+│  │        ↓                                           │
+│  │ → DimensionScores                                  │
+│  └──────────┬───────────┘                             │
+│             │                                          │
+│             ▼                                          │
+│  Step 3: Reporter                                     │
+│  ┌──────────────────────┐                             │
+│  │ Scores → MatchReport                               │
+│  └──────────────────────┘                             │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+\`\`\`
+
+## 数据模型
+
+### 输入
+
+#### Resume (简历对象)
+
+\`\`\`python
+class Resume(BaseModel):
+    name: str
+    email: Optional[str]
+    phone: Optional[str]
+    education: list[Education]      # 教育经历列表
+    experience: list[Experience]    # 工作经历列表
+    skills: list[str]               # 技术技能列表
+    soft_skills: list[str]          # 软技能列表
+\`\`\`
+
+#### JDRequirements (需求对象)
+
+\`\`\`python
+class JDRequirements(BaseModel):
+    required_skills: list[str]      # 要求的技术技能
+    experience_years: int           # 要求的工作年限
+    education_level: str            # 要求的学历
+    soft_skills: list[str]          # 要求的软技能
+\`\`\`
+
+### 输出
+
+\`\`\`python
+dict[str, DimensionScore] = {
+    "hard_skills": DimensionScore(
+        score=80,
+        matched=["Python", "FastAPI"],
+        missing=["Docker"]
+    ),
+    "experience": DimensionScore(
+        score=100,
+        detail="4年 vs 要求3年"
+    ),
+    "education": DimensionScore(
+        score=100,
+        detail="本科 vs 要求本科"
+    ),
+    "soft_skills": DimensionScore(
+        score=75,
+        matched=["沟通能力"],
+        missing=["领导力"]
+    )
+}
+\`\`\`
+
+## 工作原理
+
+### 匹配流程
+
+\`\`\`
+Matcher.match(resume, requirements)
+    │
+    ├─▶ 1. 计算工作年限
+    │      _calculate_years(experience)
+    │      → 从 "3年", "2年6个月" 提取总年数
+    │
+    ├─▶ 2. 提取最高学历
+    │      _get_highest_degree(education)
+    │      → 按 博士&gt;硕士&gt;本科&gt;大专 排序
+    │
+    ├─▶ 3. 调用 Scorer 计算各维度
+    │      │
+    │      ├─▶ score_hard_skills(resume.skills, required_skills)
+    │      │    • 大小写不敏感匹配
+    │      │    • 计算匹配率: matched/required * 100
+    │      │
+    │      ├─▶ score_experience(resume_years, required_years)
+    │      │    • 计算达成率: actual/required * 100
+    │      │    • 上限100分
+    │      │
+    │      ├─▶ score_education(resume_degree, required_degree)
+    │      │    • 学历等级映射: 大专(2), 本科(3), 硕士(4), 博士(5)
+    │      │    • 达标得100分,不达标按比例
+    │      │
+    │      └─▶ score_soft_skills(resume_skills, required_skills)
+    │           • 精确字符串匹配
+    │           • 计算匹配率: matched/required * 100
+    │
+    └─▶ 4. 返回维度评分字典
+\`\`\`
+
+### 核心算法详解
+
+#### 1. 技术技能匹配 (Hard Skills)
+
+\`\`\`python
+def score_hard_skills(resume_skills, required_skills):
+    # 大小写不敏感匹配
+    resume_lower = [s.lower() for s in resume_skills]
+
+    # 计算匹配和缺失
+    matched = [s for s in required_skills if s.lower() in resume_lower]
+    missing = [s for s in required_skills if s.lower() not in resume_lower]
+
+    # 计算分数
+    score = len(matched) / len(required_skills) * 100
+
+    return DimensionScore(score=score, matched=matched, missing=missing)
+\`\`\`
+
+**特点**:
+
+- ✅ 大小写不敏感 ("python" 匹配 "Python")
+- ✅ 部分匹配 (有3个中的2个得 66分)
+- ✅ 记录匹配和缺失项
+
+**示例**:
+
+\`\`\`python
+resume_skills = ["Python", "FastAPI", "PostgreSQL"]
+required_skills = ["Python", "FastAPI", "Docker"]
+
+result = {
+    "score": 66,  # 2/3 = 66.67
+    "matched": ["Python", "FastAPI"],
+    "missing": ["Docker"]
+}
+\`\`\`
+
+#### 2. 工作经验匹配 (Experience)
+
+\`\`\`python
+def score_experience(resume_years, required_years):
+    if required_years == 0:
+        return DimensionScore(score=100, detail="无年限要求")
+
+    score = min(resume_years / required_years * 100, 100)
+
+    return DimensionScore(
+        score=score,
+        detail=f"{resume_years}年 vs 要求{required_years}年"
+    )
+\`\`\`
+
+**评分规则**:
+
+\`\`\`
+实际年限 / 要求年限 * 100, 上限100分
+
+示例:
+- 3年 vs 要求3年 → 100分
+- 5年 vs 要求3年 → 100分 (超出也是100)
+- 2年 vs 要求3年 → 66分
+- 0年 vs 要求3年 → 0分
+\`\`\`
+
+**年限提取**:
+
+\`\`\`python
+def _calculate_years(experiences):
+    total = 0
+    for exp in experiences:
+        # 从 "3年" 或 "3年6个月" 提取数字
+        match = re.search(r'(\\d+)年', exp.duration)
+        if match:
+            total += int(match.group(1))
+    return total
+\`\`\`
+
+#### 3. 教育背景匹配 (Education)
+
+\`\`\`python
+EDUCATION_LEVELS = {
+    "大专": 2,
+    "本科": 3,
+    "硕士": 4,
+    "博士": 5
+}
+
+def score_education(resume_degree, required_degree):
+    actual = EDUCATION_LEVELS.get(resume_degree, 0)
+    required = EDUCATION_LEVELS.get(required_degree, 0)
+
+    if actual &gt;= required:
+        score = 100  # 达标或超标
+    else:
+        score = actual / required * 100  # 不达标按比例
+
+    return DimensionScore(
+        score=score,
+        detail=f"{resume_degree} vs 要求{required_degree}"
+    )
+\`\`\`
+
+**评分示例**:
+
+\`\`\`
+硕士 vs 要求本科 → 100分 (超标)
+本科 vs 要求本科 → 100分 (达标)
+大专 vs 要求本科 → 66分  (2/3)
+本科 vs 要求硕士 → 75分  (3/4)
+\`\`\`
+
+#### 4. 软技能匹配 (Soft Skills)
+
+\`\`\`python
+def score_soft_skills(resume_skills, required_skills):
+    # 精确字符串匹配 (区分大小写)
+    matched = [s for s in required_skills if s in resume_skills]
+    missing = [s for s in required_skills if s not in resume_skills]
+
+    score = len(matched) / len(required_skills) * 100
+
+    return DimensionScore(score=score, matched=matched, missing=missing)
+\`\`\`
+
+**注意**: 软技能使用精确匹配,不做大小写转换
+
+## 使用示例
+
+### 基本使用
+
+\`\`\`python
+from app.pipeline.matcher import Matcher
+from app.types.models import Resume, JDRequirements, Education, Experience
+
+# 创建匹配器
+matcher = Matcher()
+
+# 准备简历
+resume = Resume(
+    name="张三",
+    email="zhangsan@example.com",
+    phone="138****0000",
+    education=[
+        Education(degree="本科", major="计算机科学", school="清华大学", year=2018)
+    ],
+    experience=[
+        Experience(
+            company="字节跳动",
+            position="Python工程师",
+            duration="3年",
+            description="后端开发"
+        )
+    ],
+    skills=["Python", "FastAPI", "PostgreSQL"],
+    soft_skills=["沟通能力", "团队协作"]
+)
+
+# 准备需求 (通常来自 JDParser)
+requirements = JDRequirements(
+    required_skills=["Python", "FastAPI", "Docker"],
+    experience_years=3,
+    education_level="本科",
+    soft_skills=["沟通能力", "问题解决能力"]
+)
+
+# 执行匹配
+dimension_scores = matcher.match(resume, requirements)
+
+# 查看结果
+print(dimension_scores["hard_skills"].score)      # 66
+print(dimension_scores["hard_skills"].matched)    # ["Python", "FastAPI"]
+print(dimension_scores["hard_skills"].missing)    # ["Docker"]
+
+print(dimension_scores["experience"].score)       # 100
+print(dimension_scores["education"].score)        # 100
+print(dimension_scores["soft_skills"].score)      # 50
+\`\`\`
+
+### 在 Agent 工具中使用
+
+\`\`\`python
+# app/agent/tools/score_candidate.py
+from app.pipeline.matcher import Matcher
+from app.pipeline.reporter import Reporter
+
+matcher = Matcher()
+reporter = Reporter()
+
+def run_score_candidate(resume: dict, requirements: dict) -&gt; dict:
+    # 转换为对象
+    resume_obj = Resume(**resume)
+    requirements_obj = JDRequirements(**requirements)
+
+    # 匹配评分
+    dimension_scores = matcher.match(resume_obj, requirements_obj)
+
+    # 生成报告
+    report = reporter.generate(dimension_scores)
+
+    return report
+\`\`\`
+
+## 辅助方法
+
+### \\_calculate_years()
+
+**作用**: 从工作经历列表中提取总工作年限
+
+\`\`\`python
+def _calculate_years(self, experiences: list) -&gt; int:
+    total = 0
+    for exp in experiences:
+        # 正则匹配 "X年"
+        match = re.search(r'(\\d+)年', exp.duration)
+        if match:
+            total += int(match.group(1))
+    return total
+\`\`\`
+
+**支持的格式**:
+
+- ✅ "3年" → 3
+- ✅ "3年6个月" → 3 (忽略月份)
+- ✅ "5年2个月" → 5
+- ❌ "36个月" → 0 (不支持)
+- ❌ "Three years" → 0 (不支持英文)
+
+### \\_get_highest_degree()
+
+**作用**: 从教育经历列表中提取最高学历
+
+\`\`\`python
+def _get_highest_degree(self, education: list) -&gt; str:
+    degrees = [e.degree for e in education]
+    priority = ["博士", "硕士", "本科", "大专"]
+
+    # 按优先级查找
+    for d in priority:
+        if d in degrees:
+            return d
+
+    # 默认本科
+    return "本科"
+\`\`\`
+
+**示例**:
+
+\`\`\`python
+education = [
+    Education(degree="本科", ...),
+    Education(degree="硕士", ...)
+]
+# 返回: "硕士"
+
+education = [
+    Education(degree="大专", ...)
+]
+# 返回: "大专"
+
+education = []
+# 返回: "本科" (默认)
+\`\`\`
+
+## 评分权重
+
+Matcher 使用 \`Scorer\` 类计算综合分数时的权重分配:
+
+\`\`\`python
+WEIGHTS = {
+    "hard_skills": 0.4,    # 40% - 技术技能最重要
+    "experience": 0.3,     # 30% - 工作经验其次
+    "education": 0.15,     # 15% - 教育背景
+    "soft_skills": 0.15    # 15% - 软技能
+}
+
+overall_score = (
+    hard_skills_score * 0.4 +
+    experience_score * 0.3 +
+    education_score * 0.15 +
+    soft_skills_score * 0.15
+)
+\`\`\`
+
+**权重设计理念**:
+
+- 技术岗位以技能和经验为主
+- 教育背景和软技能为辅助参考
+- 可根据不同岗位类型调整权重
+
+## 性能考虑
+
+### 时间复杂度
+
+\`\`\`
+matcher.match(resume, requirements):
+    O(n*m) where:
+    - n = len(resume.skills)
+    - m = len(required_skills)
+
+实际场景:
+    n ≈ 10, m ≈ 5
+    → O(50) 非常快
+\`\`\`
+
+### 优化建议
+
+#### 1. 技能匹配优化
+
+\`\`\`python
+# 当前: O(n*m)
+matched = [s for s in required_skills if s.lower() in resume_lower]
+
+# 优化: O(n+m)
+resume_set = set(s.lower() for s in resume_skills)
+matched = [s for s in required_skills if s.lower() in resume_set]
+\`\`\`
+
+#### 2. 批量匹配
+
+\`\`\`python
+class Matcher:
+    def match_batch(self, resumes: list[Resume], requirements: JDRequirements) -&gt; list[dict]:
+        """批量处理多个简历"""
+        return [self.match(resume, requirements) for resume in resumes]
+\`\`\`
+
+#### 3. 缓存常用计算
+
+\`\`\`python
+from functools import lru_cache
+
+class Matcher:
+    @lru_cache(maxsize=100)
+    def _calculate_years_cached(self, experiences_tuple: tuple) -&gt; int:
+        """缓存年限计算结果"""
+        experiences = list(experiences_tuple)
+        return self._calculate_years(experiences)
+\`\`\`
+
+## 依赖关系
+
+\`\`\`
+Matcher
+├── app.types.models
+│   ├── Resume
+│   ├── JDRequirements
+│   └── DimensionScore
+├── app.utils.scorer.Scorer
+│   ├── score_hard_skills()
+│   ├── score_experience()
+│   ├── score_education()
+│   └── score_soft_skills()
+└── Python 标准库
+    └── re (正则表达式)
+\`\`\`
+
+## 测试
+
+### 单元测试示例
+
+\`\`\`python
+# tests/test_matcher.py
+import pytest
+from app.pipeline.matcher import Matcher
+from app.types.models import Resume, JDRequirements, Education, Experience
+
+def test_match_perfect_candidate():
+    """测试完美匹配的候选人"""
+    matcher = Matcher()
+
+    resume = Resume(
+        name="测试",
+        education=[Education(degree="本科", major="CS", school="清华", year=2018)],
+        experience=[Experience(company="A", position="工程师", duration="3年", description="开发")],
+        skills=["Python", "FastAPI", "Docker"],
+        soft_skills=["沟通能力", "团队协作"]
+    )
+
+    requirements = JDRequirements(
+        required_skills=["Python", "FastAPI", "Docker"],
+        experience_years=3,
+        education_level="本科",
+        soft_skills=["沟通能力", "团队协作"]
+    )
+
+    scores = matcher.match(resume, requirements)
+
+    assert scores["hard_skills"].score == 100
+    assert scores["experience"].score == 100
+    assert scores["education"].score == 100
+    assert scores["soft_skills"].score == 100
+
+def test_match_partial_skills():
+    """测试部分技能匹配"""
+    matcher = Matcher()
+
+    resume = Resume(
+        name="测试",
+        education=[Education(degree="本科", major="CS", school="清华", year=2018)],
+        experience=[Experience(company="A", position="工程师", duration="3年", description="开发")],
+        skills=["Python", "FastAPI"],  # 缺少 Docker
+        soft_skills=[]
+    )
+
+    requirements = JDRequirements(
+        required_skills=["Python", "FastAPI", "Docker"],
+        experience_years=3,
+        education_level="本科",
+        soft_skills=[]
+    )
+
+    scores = matcher.match(resume, requirements)
+
+    assert scores["hard_skills"].score == 66  # 2/3
+    assert scores["hard_skills"].matched == ["Python", "FastAPI"]
+    assert scores["hard_skills"].missing == ["Docker"]
+
+def test_calculate_years():
+    """测试年限计算"""
+    matcher = Matcher()
+
+    experiences = [
+        Experience(company="A", position="工程师", duration="3年", description="开发"),
+        Experience(company="B", position="高级工程师", duration="2年6个月", description="架构")
+    ]
+
+    total_years = matcher._calculate_years(experiences)
+    assert total_years == 5  # 3 + 2
+
+def test_get_highest_degree():
+    """测试最高学历提取"""
+    matcher = Matcher()
+
+    education = [
+        Education(degree="本科", major="CS", school="A大学", year=2015),
+        Education(degree="硕士", major="CS", school="B大学", year=2018)
+    ]
+
+    highest = matcher._get_highest_degree(education)
+    assert highest == "硕士"
+\`\`\`
+
+## 常见问题 (FAQ)
+
+### Q1: 为什么技术技能匹配是大小写不敏感的,但软技能不是?
+
+**A**:
+
+- **技术技能**: 通常是缩写或专有名词,大小写变体多 ("python", "Python", "PYTHON")
+- **软技能**: 通常是完整词组,格式统一 ("沟通能力", "团队协作")
+- 如需统一,可以修改 \`score_soft_skills\` 方法
+
+### Q2: 如何调整各维度的权重?
+
+**A**: 修改 \`Scorer\` 类的 \`WEIGHTS\` 字典:
+
+\`\`\`python
+# app/utils/scorer.py
+WEIGHTS = {
+    "hard_skills": 0.5,    # 提高技术技能权重到50%
+    "experience": 0.3,
+    "education": 0.1,
+    "soft_skills": 0.1
+}
+\`\`\`
+
+### Q3: 年限计算不支持"月"怎么办?
+
+**A**: 可以改进 \`_calculate_years\` 方法:
+
+\`\`\`python
+def _calculate_years(self, experiences: list) -&gt; float:
+    total_months = 0
+    for exp in experiences:
+        # 匹配 "X年Y个月"
+        year_match = re.search(r'(\\d+)年', exp.duration)
+        month_match = re.search(r'(\\d+)个月', exp.duration)
+
+        if year_match:
+            total_months += int(year_match.group(1)) * 12
+        if month_match:
+            total_months += int(month_match.group(1))
+
+    return total_months / 12  # 转换为年
+\`\`\`
+
+### Q4: 如何处理同义技能?
+
+**A**: 可以引入技能映射表:
+
+\`\`\`python
+SKILL_SYNONYMS = {
+    "js": "javascript",
+    "ts": "typescript",
+    "py": "python",
+    "k8s": "kubernetes"
+}
+
+def normalize_skill(skill: str) -&gt; str:
+    lower = skill.lower()
+    return SKILL_SYNONYMS.get(lower, lower)
+\`\`\`
+
+### Q5: 如何支持技能的模糊匹配?
+
+**A**: 可以使用字符串相似度算法:
+
+\`\`\`python
+from difflib import SequenceMatcher
+
+def fuzzy_match(skill1: str, skill2: str, threshold=0.8) -&gt; bool:
+    ratio = SequenceMatcher(None, skill1.lower(), skill2.lower()).ratio()
+    return ratio &gt;= threshold
+\`\`\`
+
+## 未来改进方向
+
+### 1. 支持技能等级
+
+\`\`\`python
+class Skill(BaseModel):
+    name: str
+    level: int  # 1-5级
+
+# 匹配时考虑等级差异
+def score_hard_skills_with_level(resume_skills, required_skills):
+    # Python(3级) vs 要求Python(5级) → 部分分数
+    pass
+\`\`\`
+
+### 2. 支持技能分类
+
+\`\`\`python
+class SkillCategory(BaseModel):
+    programming: list[str]      # 编程语言
+    frameworks: list[str]       # 框架
+    databases: list[str]        # 数据库
+    tools: list[str]            # 工具
+
+# 不同类别使用不同权重
+\`\`\`
+
+### 3. 引入 NLP 相似度匹配
+
+\`\`\`python
+from sentence_transformers import SentenceTransformer
+
+class SemanticMatcher(Matcher):
+    def __init__(self):
+        super().__init__()
+        self.model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+
+    def score_hard_skills_semantic(self, resume_skills, required_skills):
+        # 使用语义相似度而非精确匹配
+        # "后端开发" 能匹配 "服务端开发"
+        pass
+\`\`\`
+
+### 4. 支持行业特定评分规则
+
+\`\`\`python
+class TechMatcher(Matcher):
+    """技术岗位专用匹配器"""
+    WEIGHTS = {"hard_skills": 0.5, "experience": 0.35, ...}
+
+class SalesMatcher(Matcher):
+    """销售岗位专用匹配器"""
+    WEIGHTS = {"soft_skills": 0.4, "experience": 0.4, ...}
+\`\`\`
+
+## 参考资料
+
+- [正则表达式文档](https://docs.python.org/3/library/re.html)
+- [Pydantic 数据验证](https://docs.pydantic.dev/)
+- [模糊字符串匹配](https://docs.python.org/3/library/difflib.html)
+
+## 维护历史
+
+| 日期       | 版本  | 变更说明                |
+| ---------- | ----- | ----------------------- |
+| 2026-04-03 | 1.0.0 | 初始版本,支持四维度匹配 |
+`,
+            "reporter": `# Reporter 组件文档
+
+## 概述
+
+\`Reporter\` 是 HR Agent 系统的报告生成组件,负责将多维度评分结果转换为最终的评估报告,包括综合评分、推荐结论和评估理由。它是评估流程的最后一步,将量化数据转化为可理解的决策依据。
+
+## 核心功能
+
+### 功能定位
+
+**报告生成器** - 将评分数据转换为结构化报告
+
+\`\`\`
+输入:                                  输出:
+┌─────────────────────┐              ┌──────────────────────┐
+│ DimensionScores:    │              │ MatchReport:         │
+│  hard_skills: 80    │              │  overall_score: 82   │
+│  experience: 100    │  ─▶ Reporter ─▶ recommendation:     │
+│  education: 100     │              │    "推荐"            │
+│  soft_skills: 75    │              │  reasons: [...]      │
+└─────────────────────┘              │  dimensions: {...}   │
+                                     └──────────────────────┘
+\`\`\`
+
+## 在系统中的位置
+
+\`\`\`
+评估流程:
+JDParser → Matcher → Reporter → 最终报告
+                       ▲
+                    这里!
+\`\`\`
+
+## 数据模型
+
+### 输入
+
+\`\`\`python
+dimension_scores: dict[str, DimensionScore] = {
+    "hard_skills": DimensionScore(score=80, matched=[...], missing=[...]),
+    "experience": DimensionScore(score=100, detail="..."),
+    "education": DimensionScore(score=100, detail="..."),
+    "soft_skills": DimensionScore(score=75, matched=[...], missing=[...])
+}
+\`\`\`
+
+### 输出
+
+\`\`\`python
+class MatchReport(BaseModel):
+    overall_score: int           # 综合评分 (0-100)
+    dimensions: dict            # 各维度详细得分
+    recommendation: str         # "推荐" 或 "不推荐"
+    reasons: list[str]          # 推荐理由列表
+\`\`\`
+
+## 工作原理
+
+### 报告生成流程
+
+\`\`\`
+Reporter.generate(dimension_scores)
+    │
+    ├─▶ 1. 计算综合评分
+    │      scorer.calculate_overall()
+    │      • 加权求和: 技能40% + 经验30% + 学历15% + 软技能15%
+    │
+    ├─▶ 2. 生成推荐结论
+    │      overall &gt;= 70 → "推荐"
+    │      overall &lt; 70  → "不推荐"
+    │
+    ├─▶ 3. 提取评估理由
+    │      • 技术栈匹配度高 (hard_skills &gt;= 80)
+    │      • 工作经验符合要求 (experience == 100)
+    │      • 教育背景符合要求 (education == 100)
+    │      • 软技能匹配 (soft_skills &gt;= 80)
+    │
+    └─▶ 4. 返回 MatchReport
+\`\`\`
+
+### 核心算法
+
+#### 1. 综合评分计算
+
+\`\`\`python
+def calculate_overall(dimension_scores: dict) -&gt; int:
+    """
+    使用加权求和计算综合评分
+
+    权重分配:
+    - 技术技能: 40%
+    - 工作经验: 30%
+    - 教育背景: 15%
+    - 软技能: 15%
+    """
+    total = 0
+    for dim, weight in WEIGHTS.items():
+        if dim in dimension_scores:
+            total += dimension_scores[dim].score * weight
+    return int(total)
+\`\`\`
+
+**示例**:
+
+\`\`\`python
+scores = {
+    "hard_skills": 80,
+    "experience": 100,
+    "education": 100,
+    "soft_skills": 60
+}
+
+overall = 80*0.4 + 100*0.3 + 100*0.15 + 60*0.15
+        = 32 + 30 + 15 + 9
+        = 86
+\`\`\`
+
+#### 2. 推荐阈值
+
+\`\`\`python
+THRESHOLD = 70  # 推荐阈值
+
+recommendation = "推荐" if overall &gt;= 70 else "不推荐"
+\`\`\`
+
+**设计理念**:
+
+- 70分作为及格线
+- 可根据业务需求调整阈值
+- 建议范围: 60-80分
+
+#### 3. 理由提取规则
+
+\`\`\`python
+reasons = []
+
+# 技术栈匹配度高
+if hard_skills_score &gt;= 80:
+    reasons.append("技术栈匹配度高")
+
+# 工作经验符合要求
+if experience_score &gt;= 100:
+    reasons.append("工作经验符合要求")
+
+# 教育背景符合要求
+if education_score &gt;= 100:
+    reasons.append("教育背景符合要求")
+
+# 软技能匹配
+if soft_skills_score &gt;= 80:
+    reasons.append("软技能匹配")
+
+# 兜底理由
+if not reasons:
+    reasons.append("综合评估结果")
+\`\`\`
+
+## 使用示例
+
+### 基本使用
+
+\`\`\`python
+from app.pipeline.reporter import Reporter
+from app.types.models import DimensionScore
+
+reporter = Reporter()
+
+# 准备维度评分
+dimension_scores = {
+    "hard_skills": DimensionScore(
+        score=85,
+        matched=["Python", "FastAPI"],
+        missing=["Docker"]
+    ),
+    "experience": DimensionScore(
+        score=100,
+        detail="3年 vs 要求3年"
+    ),
+    "education": DimensionScore(
+        score=100,
+        detail="本科 vs 要求本科"
+    ),
+    "soft_skills": DimensionScore(
+        score=50,
+        matched=["沟通能力"],
+        missing=["领导力"]
+    )
+}
+
+# 生成报告
+report = reporter.generate(dimension_scores)
+
+print(report["overall_score"])      # 86
+print(report["recommendation"])     # "推荐"
+print(report["reasons"])            # ["技术栈匹配度高", "工作经验符合要求", "教育背景符合要求"]
+\`\`\`
+
+### 在完整流程中使用
+
+\`\`\`python
+# app/agent/tools/score_candidate.py
+from app.pipeline.matcher import Matcher
+from app.pipeline.reporter import Reporter
+
+def run_score_candidate(resume: dict, requirements: dict) -&gt; dict:
+    # Step 1: 匹配评分
+    matcher = Matcher()
+    dimension_scores = matcher.match(resume, requirements)
+
+    # Step 2: 生成报告
+    reporter = Reporter()
+    report = reporter.generate(dimension_scores)
+
+    return report
+\`\`\`
+
+## 配置选项
+
+### 调整推荐阈值
+
+\`\`\`python
+# app/pipeline/reporter.py
+THRESHOLD = 75  # 提高到75分
+
+# 或者根据岗位类型动态调整
+def get_threshold(job_level: str) -&gt; int:
+    thresholds = {
+        "初级": 60,
+        "中级": 70,
+        "高级": 80,
+        "专家": 85
+    }
+    return thresholds.get(job_level, 70)
+\`\`\`
+
+### 自定义理由规则
+
+\`\`\`python
+class CustomReporter(Reporter):
+    def generate(self, dimension_scores: dict) -&gt; dict:
+        overall = self.scorer.calculate_overall(dimension_scores)
+        recommendation = "推荐" if overall &gt;= THRESHOLD else "不推荐"
+
+        # 自定义理由逻辑
+        reasons = self._custom_reasons(dimension_scores, overall)
+
+        return {
+            "overall_score": overall,
+            "dimensions": {k: v.model_dump() for k, v in dimension_scores.items()},
+            "recommendation": recommendation,
+            "reasons": reasons
+        }
+
+    def _custom_reasons(self, scores: dict, overall: int) -&gt; list[str]:
+        reasons = []
+
+        # 更细粒度的理由
+        hard = scores.get("hard_skills", DimensionScore(score=0)).score
+        if hard &gt;= 90:
+            reasons.append("技能完美匹配")
+        elif hard &gt;= 80:
+            reasons.append("技能匹配度高")
+        elif hard &gt;= 60:
+            reasons.append("技能基本匹配")
+
+        # ... 其他维度
+
+        return reasons
+\`\`\`
+
+## 性能考虑
+
+### 时间复杂度
+
+\`\`\`
+Reporter.generate(): O(1)
+    - calculate_overall: O(4) = O(1)
+    - 条件判断: O(4) = O(1)
+    - 字典转换: O(4) = O(1)
+
+极快,无性能问题
+\`\`\`
+
+## 依赖关系
+
+\`\`\`
+Reporter
+├── app.types.models.DimensionScore
+├── app.utils.scorer.Scorer
+│   └── calculate_overall()
+└── 常量
+    └── THRESHOLD (推荐阈值)
+\`\`\`
+
+## 测试
+
+### 单元测试示例
+
+\`\`\`python
+# tests/test_reporter.py
+from app.pipeline.reporter import Reporter
+from app.types.models import DimensionScore
+
+def test_generate_recommend():
+    """测试推荐场景"""
+    reporter = Reporter()
+
+    scores = {
+        "hard_skills": DimensionScore(score=90),
+        "experience": DimensionScore(score=100),
+        "education": DimensionScore(score=100),
+        "soft_skills": DimensionScore(score=80)
+    }
+
+    report = reporter.generate(scores)
+
+    assert report["overall_score"] == 91  # 90*0.4 + 100*0.3 + 100*0.15 + 80*0.15
+    assert report["recommendation"] == "推荐"
+    assert "技术栈匹配度高" in report["reasons"]
+    assert "工作经验符合要求" in report["reasons"]
+
+def test_generate_not_recommend():
+    """测试不推荐场景"""
+    reporter = Reporter()
+
+    scores = {
+        "hard_skills": DimensionScore(score=50),
+        "experience": DimensionScore(score=60),
+        "education": DimensionScore(score=60),
+        "soft_skills": DimensionScore(score=50)
+    }
+
+    report = reporter.generate(scores)
+
+    assert report["overall_score"] == 55
+    assert report["recommendation"] == "不推荐"
+    assert report["reasons"] == ["综合评估结果"]  # 无其他理由
+
+def test_edge_case_threshold():
+    """测试阈值边界"""
+    reporter = Reporter()
+
+    # 恰好70分
+    scores = {
+        "hard_skills": DimensionScore(score=70),
+        "experience": DimensionScore(score=70),
+        "education": DimensionScore(score=70),
+        "soft_skills": DimensionScore(score=70)
+    }
+
+    report = reporter.generate(scores)
+    assert report["overall_score"] == 70
+    assert report["recommendation"] == "推荐"  # &gt;= 70
+\`\`\`
+
+## 常见问题 (FAQ)
+
+### Q1: 为什么推荐阈值是70分?
+
+**A**:
+
+- 70分代表"基本合格"
+- 参考了行业通用标准(60分及格,70分良好)
+- 可根据实际招聘标准调整
+
+### Q2: 如何根据不同岗位设置不同阈值?
+
+**A**: 可以扩展 Reporter 支持动态阈值:
+
+\`\`\`python
+class Reporter:
+    def generate(self, dimension_scores: dict, job_level: str = "中级") -&gt; dict:
+        threshold = self._get_threshold(job_level)
+        overall = self.scorer.calculate_overall(dimension_scores)
+        recommendation = "推荐" if overall &gt;= threshold else "不推荐"
+        # ...
+\`\`\`
+
+### Q3: 理由列表为空时怎么办?
+
+**A**: 代码中已有兜底逻辑:
+
+\`\`\`python
+if not reasons:
+    reasons.append("综合评估结果")
+\`\`\`
+
+### Q4: 如何添加更多理由类型?
+
+**A**: 在 \`generate\` 方法中添加条件判断:
+
+\`\`\`python
+# 新增理由: 超出经验要求
+if experience_score &gt; 100:
+    reasons.append("工作经验丰富,超出要求")
+
+# 新增理由: 学历超标
+if education_score &gt; 100:
+    reasons.append("教育背景优秀")
+\`\`\`
+
+## 未来改进方向
+
+### 1. 分级推荐
+
+\`\`\`python
+def get_recommendation_level(overall: int) -&gt; str:
+    if overall &gt;= 90:
+        return "强烈推荐"
+    elif overall &gt;= 80:
+        return "推荐"
+    elif overall &gt;= 70:
+        return "可以考虑"
+    else:
+        return "不推荐"
+\`\`\`
+
+### 2. 风险提示
+
+\`\`\`python
+def generate_warnings(dimension_scores: dict) -&gt; list[str]:
+    warnings = []
+    if dimension_scores["hard_skills"].score &lt; 50:
+        warnings.append("技能匹配度较低,可能需要额外培训")
+    if dimension_scores["experience"].score &lt; 50:
+        warnings.append("工作经验不足,建议降低岗位级别")
+    return warnings
+\`\`\`
+
+### 3. 个性化报告模板
+
+\`\`\`python
+class ReportTemplate:
+    def format_reason(self, reason_type: str, score: int) -&gt; str:
+        templates = {
+            "hard_skills": "技能匹配度{score}分,{level}",
+            "experience": "工作经验{score}分,{level}"
+        }
+        # 根据分数段生成不同描述
+\`\`\`
+
+### 4. 多语言支持
+
+\`\`\`python
+class MultilingualReporter(Reporter):
+    def __init__(self, language="zh"):
+        super().__init__()
+        self.language = language
+        self.translations = load_translations(language)
+
+    def generate(self, dimension_scores: dict) -&gt; dict:
+        report = super().generate(dimension_scores)
+        # 翻译 recommendation 和 reasons
+        return self._translate(report)
+\`\`\`
+
+## 参考资料
+
+- [Pydantic 模型验证](https://docs.pydantic.dev/)
+- [Python 字典操作](https://docs.python.org/3/tutorial/datastructures.html#dictionaries)
+
+## 维护历史
+
+| 日期       | 版本  | 变更说明                  |
+| ---------- | ----- | ------------------------- |
+| 2026-04-03 | 1.0.0 | 初始版本,支持基础报告生成 |
+`,
+            "hr-agent": `# HRAgent 组件文档
+
+## 概述
+
+\`HRAgent\` 是 HR Agent 系统的核心调度组件,基于 LangGraph 的 ReAct Agent 模式,负责编排整个简历评估流程。它通过 LLM 智能决策,按顺序调用三个工具完成评估任务。
+
+## 核心功能
+
+### 功能定位
+**AI Agent 调度器** - 智能编排评估流程
+
+\`\`\`
+用户请求 → HRAgent → 工具编排 → 结果返回
+              ↓
+         ┌─────────────┐
+         │ LLM 决策    │
+         │ ReAct 循环  │
+         └─────────────┘
+              ↓
+    parse_jd → score → generate_html
+\`\`\`
+
+## 在系统中的位置
+
+\`\`\`
+┌──────────────────────────────────────────┐
+│            HRAgent (核心编排器)            │
+├──────────────────────────────────────────┤
+│                                          │
+│  输入: Resume + JD Text                  │
+│         ↓                                │
+│  ┌────────────────────────────────────┐ │
+│  │ LangGraph ReAct Agent              │ │
+│  │                                    │ │
+│  │  LLM (MiniMax-M2.5)               │ │
+│  │    ↓                              │ │
+│  │  Tool 1: parse_jd                 │ │
+│  │    ↓                              │ │
+│  │  Tool 2: score_candidate          │ │
+│  │    ↓                              │ │
+│  │  Tool 3: generate_report_html     │ │
+│  │    ↓                              │ │
+│  │  生成总结推理                       │ │
+│  └────────────────────────────────────┘ │
+│         ↓                                │
+│  输出: AgentResult                       │
+│    - session_id                         │
+│    - report (MatchReport)               │
+│    - html                               │
+│    - reasoning                          │
+│                                          │
+└──────────────────────────────────────────┘
+\`\`\`
+
+## 数据模型
+
+### 输入
+\`\`\`python
+resume: Resume           # 候选人简历对象
+jd_text: str            # 职位描述文本
+\`\`\`
+
+### 输出
+\`\`\`python
+class AgentResult(BaseModel):
+    session_id: str        # 会话唯一标识
+    report: MatchReport    # 评估报告
+    html: str             # HTML 报告页面
+    reasoning: str        # Agent 的推理总结
+\`\`\`
+
+## 工作原理
+
+### ReAct 循环
+
+\`\`\`
+HRAgent.run(resume, jd_text)
+    │
+    ├─▶ 1. 生成 session_id (UUID)
+    │
+    ├─▶ 2. 构建工具列表
+    │      _make_tools(session_id)
+    │      • parse_jd_tool (全局)
+    │      • score_candidate (闭包,绑定 session_id)
+    │      • generate_report_html (闭包,绑定 session_id)
+    │
+    ├─▶ 3. 创建 ReAct Agent
+    │      create_react_agent(model, tool_node)
+    │
+    ├─▶ 4. 构建提示消息
+    │      SystemMessage: 角色定义 + 工具调用顺序
+    │      HumanMessage: 具体任务 + JD + 简历
+    │
+    ├─▶ 5. Agent 执行循环
+    │      graph.invoke(messages)
+    │      ┌──────────────────────────┐
+    │      │ LLM 推理 → 决定调用工具   │
+    │      │   ↓                      │
+    │      │ 调用 parse_jd            │
+    │      │   ↓                      │
+    │      │ 观察结果 → 继续推理       │
+    │      │   ↓                      │
+    │      │ 调用 score_candidate     │
+    │      │   ↓                      │
+    │      │ 观察结果 → 继续推理       │
+    │      │   ↓                      │
+    │      │ 调用 generate_report_html│
+    │      │   ↓                      │
+    │      │ 生成总结                 │
+    │      └──────────────────────────┘
+    │
+    ├─▶ 6. 提取推理总结
+    │      从 AIMessage 中提取最后的推理内容
+    │
+    ├─▶ 7. 从 store 获取结果
+    │      report_dict = _report_store[session_id]
+    │      html = _html_store[session_id]
+    │
+    └─▶ 8. 返回 AgentResult
+\`\`\`
+
+### System Prompt
+
+\`\`\`python
+_SYSTEM_PROMPT = """你是一位专业的HR评估专家。你需要对候选人进行全面评估，并严格按以下顺序调用工具：
+
+1. 调用 parse_jd 解析职位描述，获取结构化需求
+2. 调用 score_candidate，传入候选人简历和第一步返回的需求，计算匹配分数
+3. 调用 generate_report_html，传入第二步返回的评分报告，生成HTML报告
+
+完成三步后，输出一段中文总结，说明评估结论和推荐理由。不要跳过任何步骤。"""
+\`\`\`
+
+### 工具绑定机制
+
+\`\`\`python
+def _make_tools(session_id: str) -&gt; list:
+    """通过闭包将 session_id 绑定到工具"""
+    
+    @tool
+    def score_candidate(resume: dict, requirements: dict) -&gt; str:
+        result = run_score_candidate(resume, requirements)
+        _report_store[session_id] = result  # 存储到 session store
+        return json.dumps(result, ensure_ascii=False)
+    
+    @tool
+    def generate_report_html(report: dict) -&gt; str:
+        html = run_generate_report_html(report)
+        _html_store[session_id] = html  # 存储到 session store
+        return "html_generated"
+    
+    return [parse_jd_tool, score_candidate, generate_report_html]
+\`\`\`
+
+## 使用示例
+
+### 基本使用
+
+\`\`\`python
+from app.agent.hr_agent import HRAgent
+from app.types.models import Resume, Education, Experience
+
+# 创建 Agent
+agent = HRAgent()
+
+# 准备简历
+resume = Resume(
+    name="张三",
+    email="zhangsan@example.com",
+    phone="138****0000",
+    education=[Education(degree="本科", major="计算机", school="清华", year=2018)],
+    experience=[Experience(company="字节", position="Python工程师", duration="3年", description="后端")],
+    skills=["Python", "FastAPI"],
+    soft_skills=["沟通能力"]
+)
+
+# JD 文本
+jd_text = "招聘Python工程师，3年经验，熟悉FastAPI"
+
+# 执行评估
+try:
+    result = agent.run(resume, jd_text)
+    
+    print(f"Session ID: {result.session_id}")
+    print(f"Overall Score: {result.report.overall_score}")
+    print(f"Recommendation: {result.report.recommendation}")
+    print(f"Reasoning: {result.reasoning}")
+    print(f"HTML Length: {len(result.html)} chars")
+    
+except AgentLoopError as e:
+    print(f"Agent error: {e}")
+\`\`\`
+
+### 在 API 中使用
+
+\`\`\`python
+# app/api/routes.py
+@router.post("/api/v1/agent/match")
+async def agent_match_resume(request: MatchRequest):
+    try:
+        agent = HRAgent()
+        result = agent.run(request.resume, request.job_description)
+        return result
+    except AgentLoopError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+\`\`\`
+
+## 状态管理
+
+### Session Store
+
+\`\`\`python
+# 模块级别的字典存储
+_html_store: dict[str, str] = {}       # session_id → HTML
+_report_store: dict[str, dict] = {}    # session_id → report dict
+
+# 存储 (在工具中)
+_report_store[session_id] = result
+
+# 读取 (在 Agent 中)
+report_dict = _report_store.get(session_id, {})
+html = _html_store.get(session_id, "")
+\`\`\`
+
+**注意事项**:
+- ✅ 在单进程 uvicorn 下线程安全 (CPython GIL)
+- ❌ 在多进程模式下不安全 (\`uvicorn --workers N\`)
+- ⚠️ 没有自动清理机制,长期运行会积累内存
+
+**生产环境建议**:
+\`\`\`python
+# 使用 LRU 缓存
+from cachetools import LRUCache
+_html_store = LRUCache(maxsize=1000)
+
+# 或使用 Redis
+import redis
+redis_client = redis.Redis()
+\`\`\`
+
+## 错误处理
+
+### AgentLoopError
+
+\`\`\`python
+class AgentLoopError(Exception):
+    """Agent 循环异常"""
+    pass
+
+# 触发场景:
+# 1. 超过最大迭代次数
+raise AgentLoopError("Agent exceeded maximum iterations")
+
+# 2. 工具未产生预期输出
+raise AgentLoopError("Agent did not produce a score report")
+raise AgentLoopError("Agent did not produce an HTML report")
+\`\`\`
+
+### 异常捕获
+
+\`\`\`python
+try:
+    result = graph.invoke(...)
+except GraphRecursionError as e:
+    raise AgentLoopError("Agent exceeded maximum iterations") from e
+\`\`\`
+
+## 性能考虑
+
+### 典型执行时间
+
+\`\`\`
+完整流程耗时:
+├─ LLM 推理 1: ~1s    (决定调用 parse_jd)
+├─ parse_jd: ~2s      (LLM 解析 JD)
+├─ LLM 推理 2: ~1s    (决定调用 score_candidate)
+├─ score_candidate: ~0.1s (本地计算)
+├─ LLM 推理 3: ~1s    (决定调用 generate_html)
+├─ generate_html: ~2s (UI-UX 搜索)
+└─ LLM 总结: ~1s      (生成推理)
+─────────────────────
+总计: ~8-10秒
+\`\`\`
+
+### 优化建议
+
+#### 1. 减少 LLM 调用次数
+\`\`\`python
+# 当前: LLM 推理 4 次
+# 优化: 使用计划模式,一次性生成完整计划
+
+# 或使用函数调用 (Function Calling)
+# LLM 一次返回所有工具调用
+\`\`\`
+
+#### 2. 并行无依赖工具
+\`\`\`python
+# 当前是强依赖链,无法并行
+# 如果有独立工具可并行:
+import asyncio
+results = await asyncio.gather(
+    tool1.ainvoke(...),
+    tool2.ainvoke(...)
+)
+\`\`\`
+
+## 测试
+
+### 单元测试示例
+
+\`\`\`python
+# tests/test_hr_agent.py
+from unittest.mock import MagicMock, patch
+from app.agent.hr_agent import HRAgent, AgentLoopError
+
+def test_agent_run_returns_agent_result():
+    fake_graph = MagicMock()
+    
+    def fake_invoke(messages, config):
+        sid = config["configurable"]["thread_id"]
+        _report_store[sid] = {"overall_score": 85}
+        _html_store[sid] = "&lt;html&gt;report&lt;/html&gt;"
+        return {"messages": [AIMessage(content="推荐该候选人")]}
+    
+    fake_graph.invoke.side_effect = fake_invoke
+    
+    with patch("app.agent.hr_agent.create_react_agent", return_value=fake_graph):
+        agent = HRAgent()
+        result = agent.run(resume, jd_text)
+        
+        assert result.session_id
+        assert result.report.overall_score == 85
+        assert result.html == "&lt;html&gt;report&lt;/html&gt;"
+        assert result.reasoning == "推荐该候选人"
+\`\`\`
+
+## 常见问题 (FAQ)
+
+### Q1: 为什么使用 ReAct 而不是简单的顺序调用?
+
+**A**: 
+- ReAct 提供灵活性,LLM 可以根据中间结果调整策略
+- 支持错误重试和异常处理
+- 可扩展性强,易于添加新工具
+
+### Q2: Session Store 什么时候清理?
+
+**A**: 当前版本没有自动清理。建议:
+\`\`\`python
+# 定时清理
+from apscheduler.schedulers.background import BackgroundScheduler
+
+def cleanup_old_sessions():
+    # 清理 1 小时前的 session
+    pass
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(cleanup_old_sessions, 'interval', hours=1)
+\`\`\`
+
+### Q3: 如何限制 Agent 的最大迭代次数?
+
+**A**: LangGraph 有内置限制,可通过配置调整:
+\`\`\`python
+graph.invoke(
+    messages,
+    config={
+        "configurable": {"thread_id": session_id},
+        "recursion_limit": 20  # 默认 25
+    }
+)
+\`\`\`
+
+## 未来改进方向
+
+### 1. 流式输出
+\`\`\`python
+async def run_streaming(self, resume, jd_text):
+    async for event in graph.astream_events(...):
+        yield event  # 实时返回 Agent 状态
+\`\`\`
+
+### 2. 工具并行执行
+\`\`\`python
+# 支持声明独立工具
+independent_tools = ["get_weather", "get_salary_benchmark"]
+# LLM 可同时调用
+\`\`\`
+
+### 3. 多 Agent 协作
+\`\`\`python
+class TeamAgent:
+    def __init__(self):
+        self.parser_agent = ParserAgent()
+        self.scorer_agent = ScorerAgent()
+        # 专业化分工
+\`\`\`
+
+## 维护历史
+
+| 日期 | 版本 | 变更说明 |
+|------|------|---------|
+| 2026-04-03 | 1.0.0 | 基于 LangGraph ReAct 的初始版本 |
+`,
+            "tools": `# Tools 组件文档
+
+## 概述
+
+\`Tools\` 模块包含三个核心工具函数,供 HRAgent 调用完成简历评估流程。每个工具都使用 \`@traced_tool\` 装饰器进行日志追踪。
+
+## 工具列表
+
+\`\`\`
+app/agent/tools/
+├── parse_jd.py             # 解析职位描述
+├── score_candidate.py      # 评分候选人
+└── generate_report_html.py # 生成 HTML 报告
+\`\`\`
+
+## 1. parse_jd
+
+### 功能
+解析职位描述文本,提取结构化需求信息。
+
+### 位置
+\`app/agent/tools/parse_jd.py\`
+
+### 签名
+\`\`\`python
+@traced_tool("parse_jd")
+@tool
+def parse_jd(jd_text: str) -&gt; str:
+    """解析职位描述,返回 JSON 字符串"""
+\`\`\`
+
+### 输入
+- \`jd_text\` (str): 职位描述文本
+
+### 输出
+\`\`\`json
+{
+  "technical_skills": ["Python", "FastAPI"],
+  "years_of_experience": 3,
+  "education_required": "本科",
+  "soft_skills": ["沟通能力", "团队协作"]
+}
+\`\`\`
+
+### 实现
+\`\`\`python
+def run_parse_jd(jd_text: str) -&gt; dict:
+    """实际执行解析"""
+    parser = JDParser()
+    requirements = parser.parse(jd_text)
+    return requirements.model_dump()
+\`\`\`
+
+### 日志输出
+\`\`\`
+[parse_jd] START Input: "招聘Python工程师，3年经验..."
+[parse_jd] END Duration: 2134.56ms Status: success Output: {"technical_skills": [...]}
+\`\`\`
+
+### 错误处理
+\`\`\`python
+try:
+    requirements = parser.parse(jd_text)
+except Exception as e:
+    logger.error(f"Failed to parse JD: {e}")
+    raise ToolException(f"JD parsing error: {e}") from e
+\`\`\`
+
+---
+
+## 2. score_candidate
+
+### 功能
+评估候选人与需求的匹配度,返回多维度评分报告。
+
+### 位置
+\`app/agent/tools/score_candidate.py\`
+
+### 签名
+\`\`\`python
+@traced_tool("score_candidate")
+@tool
+def score_candidate(resume: dict, requirements: dict) -&gt; str:
+    """评分候选人,返回 JSON 字符串"""
+\`\`\`
+
+### 输入
+- \`resume\` (dict): 候选人简历对象 (序列化)
+- \`requirements\` (dict): 职位需求对象 (序列化)
+
+### 输出
+\`\`\`json
+{
+  "overall_score": 86,
+  "dimensions": {
+    "hard_skills": {
+      "score": 85,
+      "matched": ["Python", "FastAPI"],
+      "missing": ["Docker"]
+    },
+    "experience": {
+      "score": 100,
+      "detail": "3年 vs 要求3年"
+    },
+    "education": {
+      "score": 100,
+      "detail": "本科 vs 要求本科"
+    },
+    "soft_skills": {
+      "score": 50,
+      "matched": ["沟通能力"],
+      "missing": ["团队协作"]
+    }
+  },
+  "recommendation": "推荐",
+  "reasons": ["技术栈匹配度高", "工作经验符合要求", "教育背景符合要求"]
+}
+\`\`\`
+
+### 实现
+\`\`\`python
+def run_score_candidate(resume: dict, requirements: dict) -&gt; dict:
+    """实际执行评分"""
+    # 1. 反序列化
+    resume_obj = Resume(**resume)
+    requirements_obj = Requirements(**requirements)
+    
+    # 2. 匹配评分
+    matcher = Matcher()
+    dimension_scores = matcher.match(resume_obj, requirements_obj)
+    
+    # 3. 生成报告
+    reporter = Reporter()
+    report = reporter.generate(dimension_scores)
+    
+    return report
+\`\`\`
+
+### 日志输出
+\`\`\`
+[score_candidate] START Input: {"resume": {...}, "requirements": {...}}
+[score_candidate] END Duration: 125.43ms Status: success Output: {"overall_score": 86, ...}
+\`\`\`
+
+### Session 绑定
+
+在 HRAgent 中,此工具通过闭包绑定到特定 session:
+
+\`\`\`python
+def _make_tools(session_id: str) -&gt; list:
+    @traced_tool("score_candidate")
+    @tool
+    def score_candidate(resume: dict, requirements: dict) -&gt; str:
+        result = run_score_candidate(resume, requirements)
+        _report_store[session_id] = result  # 存储到 session
+        return json.dumps(result, ensure_ascii=False)
+    
+    return [parse_jd_tool, score_candidate, ...]
+\`\`\`
+
+---
+
+## 3. generate_report_html
+
+### 功能
+根据评分报告生成美观的 HTML 展示页面。
+
+### 位置
+\`app/agent/tools/generate_report_html.py\`
+
+### 签名
+\`\`\`python
+@traced_tool("generate_report_html")
+@tool
+def generate_report_html(report: dict) -&gt; str:
+    """生成 HTML 报告,返回状态消息"""
+\`\`\`
+
+### 输入
+- \`report\` (dict): 匹配报告对象 (序列化)
+
+### 输出
+\`\`\`
+"html_generated"  # 简单状态消息
+\`\`\`
+
+**注意**: 真实的 HTML 内容存储在 \`_html_store[session_id]\` 中。
+
+### 实现
+\`\`\`python
+def run_generate_report_html(report: dict) -&gt; str:
+    """实际执行 HTML 生成"""
+    # 1. 反序列化
+    match_report = MatchReport(**report)
+    
+    # 2. 通过 MCP 工具搜索 UI 组件
+    shadcn_results = search_shadcn_docs(
+        query="dashboard report card component",
+        count=3
+    )
+    
+    # 3. 根据 shadcn 风格生成 HTML
+    html = f"""
+    &lt;!DOCTYPE html&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+        &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body class="bg-gray-50"&gt;
+        &lt;div class="max-w-4xl mx-auto p-8"&gt;
+            &lt;!-- 评分卡片 --&gt;
+            &lt;div class="bg-white rounded-lg shadow p-6"&gt;
+                &lt;h2&gt;综合评分: {match_report.overall_score}&lt;/h2&gt;
+                &lt;p&gt;推荐结论: {match_report.recommendation}&lt;/p&gt;
+                &lt;!-- 维度详情 --&gt;
+                ...
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+    """
+    
+    return html
+\`\`\`
+
+### 日志输出
+\`\`\`
+[generate_report_html] START Input: {"overall_score": 86, ...}
+[generate_report_html] END Duration: 1876.23ms Status: success Output: "html_generated"
+\`\`\`
+
+### Session 绑定
+
+\`\`\`python
+def _make_tools(session_id: str) -&gt; list:
+    @traced_tool("generate_report_html")
+    @tool
+    def generate_report_html(report: dict) -&gt; str:
+        html = run_generate_report_html(report)
+        _html_store[session_id] = html  # 存储到 session
+        return "html_generated"
+    
+    return [parse_jd_tool, score_candidate, generate_report_html]
+\`\`\`
+
+---
+
+## 工具装饰器
+
+### @traced_tool
+
+记录工具执行的详细日志,包括输入、输出、耗时和状态。
+
+\`\`\`python
+# app/utils/logger.py
+def traced_tool(tool_name: str = None):
+    def decorator(func: Callable) -&gt; Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            name = tool_name or func.__name__
+            
+            # 输入预览
+            input_preview = _format_input(args, kwargs)
+            logger.info(f"[{name}] START Input: {input_preview}")
+            
+            start_time = time.time()
+            try:
+                result = func(*args, **kwargs)
+                duration = (time.time() - start_time) * 1000
+                output_preview = _format_output(result)
+                logger.info(f"[{name}] END Duration: {duration:.2f}ms Status: success Output: {output_preview}")
+                return result
+            except Exception as e:
+                duration = (time.time() - start_time) * 1000
+                logger.error(f"[{name}] END Duration: {duration:.2f}ms Status: error Output: None Error: {e}")
+                raise
+        
+        return wrapper
+    return decorator
+\`\`\`
+
+### 装饰器顺序
+
+⚠️ **重要**: \`@tool\` 必须在 \`@traced_tool\` 之后应用
+
+\`\`\`python
+# ✅ 正确
+@traced_tool("my_tool")
+@tool
+def my_tool():
+    pass
+
+# ❌ 错误 (TypeError: 'StructuredTool' object is not callable)
+@tool
+@traced_tool("my_tool")
+def my_tool():
+    pass
+\`\`\`
+
+**原因**: 
+- \`@tool\` 将函数转换为 \`StructuredTool\` 对象 (LangChain)
+- \`@traced_tool\` 需要包装原始的可调用函数
+- 顺序错误会导致 \`@traced_tool\` 尝试包装一个不可调用的对象
+
+---
+
+## 工具调用流程
+
+### 完整流程图
+
+\`\`\`
+HRAgent.run(resume, jd_text)
+    │
+    ├─▶ 1. _make_tools(session_id)
+    │      创建工具实例,绑定 session
+    │
+    ├─▶ 2. create_react_agent(model, tools)
+    │      构建 LangGraph ReAct Agent
+    │
+    ├─▶ 3. graph.invoke(messages)
+    │      ┌─────────────────────────────────┐
+    │      │ LLM: "需要调用 parse_jd"         │
+    │      └─────────────────────────────────┘
+    │                 ↓
+    │      ┌─────────────────────────────────┐
+    │      │ Tool Executor:                  │
+    │      │   parse_jd_tool(jd_text)        │
+    │      │   [parse_jd] START...           │
+    │      │   JDParser.parse()              │
+    │      │   [parse_jd] END 2134.56ms      │
+    │      └─────────────────────────────────┘
+    │                 ↓
+    │      ┌─────────────────────────────────┐
+    │      │ LLM: "已获取需求,调用 score"     │
+    │      └─────────────────────────────────┘
+    │                 ↓
+    │      ┌─────────────────────────────────┐
+    │      │ Tool Executor:                  │
+    │      │   score_candidate(resume, req)  │
+    │      │   [score_candidate] START...    │
+    │      │   Matcher + Reporter            │
+    │      │   [score_candidate] END 125ms   │
+    │      │   _report_store[sid] = result   │
+    │      └─────────────────────────────────┘
+    │                 ↓
+    │      ┌─────────────────────────────────┐
+    │      │ LLM: "已评分,生成 HTML"          │
+    │      └─────────────────────────────────┘
+    │                 ↓
+    │      ┌─────────────────────────────────┐
+    │      │ Tool Executor:                  │
+    │      │   generate_report_html(report)  │
+    │      │   [generate_html] START...      │
+    │      │   UI/UX MCP 搜索 + 生成         │
+    │      │   [generate_html] END 1876ms    │
+    │      │   _html_store[sid] = html       │
+    │      └─────────────────────────────────┘
+    │                 ↓
+    │      ┌─────────────────────────────────┐
+    │      │ LLM: "评估完成,推荐该候选人"     │
+    │      └─────────────────────────────────┘
+    │
+    └─▶ 4. 从 store 读取结果
+           report = _report_store[session_id]
+           html = _html_store[session_id]
+\`\`\`
+
+---
+
+## 日志示例
+
+### 完整流程日志
+
+\`\`\`
+2026-04-03 15:52:00,123 INFO [parse_jd] START Input: "招聘Python工程师，3年经验，本科学历..."
+2026-04-03 15:52:02,257 INFO [parse_jd] END Duration: 2134.56ms Status: success Output: {"technical_skills": ["Python", "FastAPI"], "years_of_experience": 3, ...}
+
+2026-04-03 15:52:03,334 INFO [score_candidate] START Input: {"resume": {"name": "张三", ...}, "requirements": {...}}
+2026-04-03 15:52:03,460 INFO [score_candidate] END Duration: 125.43ms Status: success Output: {"overall_score": 86, "recommendation": "推荐", ...}
+
+2026-04-03 15:52:04,521 INFO [generate_report_html] START Input: {"overall_score": 86, ...}
+2026-04-03 15:52:06,397 INFO [generate_report_html] END Duration: 1876.23ms Status: success Output: "html_generated"
+\`\`\`
+
+### 错误日志
+
+\`\`\`
+2026-04-03 15:52:00,123 INFO [parse_jd] START Input: "招聘..."
+2026-04-03 15:52:10,725 ERROR [parse_jd] END Duration: 10602.42ms Status: error Output: None Error: Failed to parse JD: Expecting value: line 1 column 1 (char 0)
+\`\`\`
+
+---
+
+## 性能统计
+
+### 典型耗时
+
+| 工具 | 平均耗时 | 瓶颈 |
+|-----|---------|-----|
+| \`parse_jd\` | 2-3秒 | LLM 推理 (MiniMax API) |
+| \`score_candidate\` | 100-200ms | 纯本地计算,极快 |
+| \`generate_report_html\` | 1-2秒 | UI/UX MCP 搜索 |
+
+### 优化建议
+
+#### 1. 缓存 JD 解析结果
+\`\`\`python
+from functools import lru_cache
+
+@lru_cache(maxsize=100)
+def run_parse_jd(jd_text: str) -&gt; dict:
+    # 相同 JD 不重复解析
+\`\`\`
+
+#### 2. 预加载 UI 模板
+\`\`\`python
+# 避免每次搜索 shadcn
+_HTML_TEMPLATE = load_template("report.html")
+
+def run_generate_report_html(report: dict) -&gt; str:
+    return _HTML_TEMPLATE.format(**report)
+\`\`\`
+
+---
+
+## 测试
+
+### 单元测试示例
+
+\`\`\`python
+# tests/test_tools.py
+from app.agent.tools.parse_jd import run_parse_jd
+from app.agent.tools.score_candidate import run_score_candidate
+from app.agent.tools.generate_report_html import run_generate_report_html
+
+def test_parse_jd():
+    jd_text = "招聘Python工程师，3年经验，本科学历"
+    result = run_parse_jd(jd_text)
+    
+    assert "technical_skills" in result
+    assert result["years_of_experience"] == 3
+    assert result["education_required"] == "本科"
+
+def test_score_candidate():
+    resume = {"name": "张三", "skills": ["Python"], ...}
+    requirements = {"technical_skills": ["Python"], ...}
+    
+    result = run_score_candidate(resume, requirements)
+    
+    assert "overall_score" in result
+    assert 0 &lt;= result["overall_score"] &lt;= 100
+    assert result["recommendation"] in ["推荐", "不推荐"]
+
+def test_generate_report_html():
+    report = {
+        "overall_score": 86,
+        "recommendation": "推荐",
+        "dimensions": {...},
+        "reasons": [...]
+    }
+    
+    html = run_generate_report_html(report)
+    
+    assert "&lt;html&gt;" in html
+    assert "86" in html
+    assert "推荐" in html
+\`\`\`
+
+---
+
+## 常见问题 (FAQ)
+
+### Q1: 为什么工具返回字符串而不是对象?
+
+**A**: LangChain 的 \`@tool\` 装饰器要求工具返回可序列化的类型 (str, int, dict 等)。字符串是最通用的格式。
+
+### Q2: 为什么 generate_report_html 返回 "html_generated" 而不是实际 HTML?
+
+**A**: 
+- LLM 不需要看到完整的 HTML 内容 (太长,浪费 tokens)
+- 实际 HTML 通过 session store 传递给 HRAgent
+- 这是一种"副作用"模式 (side effect)
+
+### Q3: 如何添加新工具?
+
+**A**: 
+\`\`\`python
+# 1. 创建工具文件
+# app/agent/tools/my_new_tool.py
+
+from langchain_core.tools import tool
+from app.utils.logger import traced_tool
+
+@traced_tool("my_new_tool")
+@tool
+def my_new_tool(param: str) -&gt; str:
+    """工具描述,LLM 会看到这个"""
+    result = do_something(param)
+    return str(result)
+
+# 2. 在 HRAgent 中注册
+def _make_tools(session_id: str) -&gt; list:
+    return [
+        parse_jd_tool,
+        score_candidate,
+        generate_report_html,
+        my_new_tool  # 新工具
+    ]
+\`\`\`
+
+### Q4: 装饰器顺序记不住怎么办?
+
+**A**: 记住口诀: **"追踪在前,工具在后"** (\`@traced_tool\` → \`@tool\`)
+
+---
+
+## 未来改进方向
+
+### 1. 异步工具
+\`\`\`python
+from langchain_core.tools import atool
+
+@traced_tool("parse_jd")
+@atool
+async def parse_jd_async(jd_text: str) -&gt; str:
+    """异步版本"""
+    result = await parser.parse_async(jd_text)
+    return json.dumps(result)
+\`\`\`
+
+### 2. 工具参数验证
+\`\`\`python
+from pydantic import BaseModel
+
+class ScoreCandidateInput(BaseModel):
+    resume: dict
+    requirements: dict
+
+@traced_tool("score_candidate")
+@tool(args_schema=ScoreCandidateInput)
+def score_candidate(resume: dict, requirements: dict) -&gt; str:
+    # Pydantic 自动验证输入
+    ...
+\`\`\`
+
+### 3. 工具结果缓存
+\`\`\`python
+from cachetools import TTLCache
+
+_tool_cache = TTLCache(maxsize=100, ttl=300)  # 5分钟过期
+
+@traced_tool("parse_jd")
+@tool
+def parse_jd(jd_text: str) -&gt; str:
+    cache_key = hash(jd_text)
+    if cache_key in _tool_cache:
+        return _tool_cache[cache_key]
+    
+    result = run_parse_jd(jd_text)
+    _tool_cache[cache_key] = result
+    return result
+\`\`\`
+
+---
+
+## 维护历史
+
+| 日期 | 版本 | 变更说明 |
+|------|------|---------|
+| 2026-04-03 | 1.0.0 | 初始版本,三个核心工具 + 追踪日志 |
+`,
+
+        };
+        
+        // 配置 marked
+        marked.setOptions({
+            highlight: function(code, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    return hljs.highlight(code, { language: lang }).value;
+                }
+                return hljs.highlightAuto(code).value;
+            },
+            breaks: true,
+            gfm: true
+        });
+        
+        // 渲染所有 markdown
+        Object.keys(markdownContent).forEach(slug => {
+            const html = marked.parse(markdownContent[slug]);
+            document.getElementById(`content-${slug}`).innerHTML = html;
+        });
+        
+        // 导航切换
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = item.getAttribute('data-section');
+                
+                // 更新导航激活状态
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // 切换内容
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(section).classList.add('active');
+                
+                // 滚动到顶部
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // 更新 URL
+                window.location.hash = section;
+            });
+        });
+        
+        // 搜索功能
+        let searchTimeout;
+        document.getElementById('searchBox').addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const query = e.target.value.toLowerCase();
+                if (!query) {
+                    // 清除高亮
+                    document.querySelectorAll('.search-highlight').forEach(el => {
+                        el.outerHTML = el.textContent;
+                    });
+                    return;
+                }
+                
+                // 搜索所有章节
+                let found = false;
+                Object.keys(markdownContent).forEach(slug => {
+                    const content = markdownContent[slug].toLowerCase();
+                    if (content.includes(query)) {
+                        if (!found) {
+                            // 跳转到第一个匹配的章节
+                            document.querySelector(`[data-section="${slug}"]`).click();
+                            found = true;
+                        }
+                    }
+                });
+                
+                if (found) {
+                    // 高亮搜索结果
+                    setTimeout(() => {
+                        const activeSection = document.querySelector('.section.active');
+                        const walker = document.createTreeWalker(
+                            activeSection,
+                            NodeFilter.SHOW_TEXT,
+                            null,
+                            false
+                        );
+                        
+                        const nodesToReplace = [];
+                        while (walker.nextNode()) {
+                            const node = walker.currentNode;
+                            if (node.nodeValue.toLowerCase().includes(query)) {
+                                nodesToReplace.push(node);
+                            }
+                        }
+                        
+                        nodesToReplace.forEach(node => {
+                            const span = document.createElement('span');
+                            const regex = new RegExp(`(${query})`, 'gi');
+                            span.innerHTML = node.nodeValue.replace(regex, '<span class="search-highlight">$1</span>');
+                            node.parentNode.replaceChild(span, node);
+                        });
+                    }, 100);
+                }
+            }, 300);
+        });
+        
+        // 页面加载时根据 hash 定位
+        window.addEventListener('load', () => {
+            if (window.location.hash) {
+                const slug = window.location.hash.substring(1);
+                const item = document.querySelector(`[data-section="${slug}"]`);
+                if (item) item.click();
+            }
+        });
+        
+        // 代码高亮
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+        });
+    </script>
+</body>
+</html>
