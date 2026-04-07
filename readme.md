@@ -38,6 +38,17 @@
 - 推荐/不推荐结论
 - 评估理由说明
 
+**🎨 增强版报告** (可选):
+
+- 📋 多层次区块布局 (概览 → 亮点 → 关注点 → 详细评分 → 对比 → 建议)
+- 💡 AI亮点卡片 (浅蓝渐变,自动图标匹配)
+- ⚠️ 关注点卡片 (浅黄警告色)
+- 🤖 AI推理过程展示 (每个维度的调整说明)
+- 📈 算法vs AI对比表格 (文字柱状图)
+- 🎯 面试建议生成 (基于评估结果的规则引擎)
+- 📱 响应式设计 (移动端友好)
+- 🖨️ 打印优化 (适合存档)
+
 ## 🏗️ 技术架构
 
 ```
@@ -104,6 +115,10 @@ BASE_URL=https://api.minimaxi.com/v1
 # 可选: 启用 AI 增强评分 (默认: false)
 # 启用后使用 AI 深度评估候选人,成本约 ¥0.042/候选人
 USE_AI_ENHANCED_MATCHER=true
+
+# 可选: 启用增强版报告 (默认: false)
+# 启用后生成多层次、视觉优化的评估报告
+USE_ENHANCED_REPORT=true
 ```
 
 **环境变量说明**:
@@ -113,6 +128,7 @@ USE_AI_ENHANCED_MATCHER=true
 | `DASHSCOPE_API_KEY`       | LLM API 密钥     | -       | 是   |
 | `BASE_URL`                | LLM API 地址     | -       | 是   |
 | `USE_AI_ENHANCED_MATCHER` | 启用 AI 增强评分 | `false` | 否   |
+| `USE_ENHANCED_REPORT`     | 启用增强版报告   | `false` | 否   |
 
 **AI 增强评分特性**:
 
